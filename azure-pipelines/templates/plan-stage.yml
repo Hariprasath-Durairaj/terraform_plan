@@ -1,0 +1,54 @@
+parameters:
+  terraformVersion: '1.5.7'
+
+stages:
+  - stage: Plan
+    displayName: 'Terraform Plan'
+    dependsOn: Validate
+    jobs:
+      - job: Plan
+        steps:
+          - checkout: self
+            persistCredentials: true
+
+          - script: |
+              rm -rf .terraform
+              rm -f .terraform.lock.hcl
+            displayName: 'Clean .terraform and lockfile'
+
+          - script: |
+              echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
+              echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(servicePrincipalId)"
+              echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+              echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            displayName: 'Set OIDC Auth Variables'
+
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: ${{ parameters.terraformVersion }}
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Init (Plan)'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(workingDirectory)'
+              backendServiceArm: '$(serviceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroup)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccount)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
+              backendAzureRmUseOIDC: true
+              useTerraformVersion: ${{ parameters.terraformVersion }}
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Plan'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(workingDirectory)'
+              environmentServiceNameAzureRM: '$(serviceConnection)'
+              planOutput: 'tfplan.out'
+              varsFile: 'qa.tfvars'
+              publishPlanResults: true
+              useTerraformVersion: ${{ parameters.terraformVersion }}

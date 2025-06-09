@@ -1,0 +1,57 @@
+parameters:
+  terraformVersion: '1.5.7'
+
+stages:
+  - stage: Apply
+    displayName: 'Terraform Apply'
+    dependsOn: Plan
+    jobs:
+      - job: Apply
+        steps:
+          - checkout: self
+            persistCredentials: true
+
+          - script: |
+              rm -rf .terraform
+              rm -f .terraform.lock.hcl
+            displayName: 'Clean .terraform and lockfile'
+
+          - script: |
+              echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
+              echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(servicePrincipalId)"
+              echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
+              echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
+            displayName: 'Set OIDC Auth Variables'
+
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: ${{ parameters.terraformVersion }}
+
+          - script: terraform -version
+            displayName: 'Show Terraform Version'
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Init (Apply)'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(workingDirectory)'
+              backendServiceArm: '$(serviceConnection)'
+              backendAzureRmResourceGroupName: '$(backendResourceGroup)'
+              backendAzureRmStorageAccountName: '$(backendStorageAccount)'
+              backendAzureRmContainerName: '$(backendContainerName)'
+              backendAzureRmKey: '$(backendKey)'
+              backendAzureRmUseOIDC: true
+              useTerraformVersion: ${{ parameters.terraformVersion }}
+
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(workingDirectory)'
+              environmentServiceNameAzureRM: '$(serviceConnection)'
+              planOrStateFilePath: 'tfplan.out'
+              varsFile: 'qa.tfvars'
+              useTerraformVersion: ${{ parameters.terraformVersion }}
+              # commandOptions: '-auto-approve' # Uncomment to skip approval
