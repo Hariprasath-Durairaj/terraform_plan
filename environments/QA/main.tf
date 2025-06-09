@@ -6,7 +6,7 @@
 # 1. Networking
 ############################
 module "vnet" {
-  source              = "../../terraform_modules/terraform-azure-network"
+  source              = "../../terraform-modules/terraform-azure-network"
   vnet_name           = var.vnet_name
   address_space       = var.address_space
   location            = var.location
@@ -16,7 +16,7 @@ module "vnet" {
 }
 
 module "natgw_public_ip" {
-  source              = "../../terraform_modules/terraform-azure-public-ip"
+  source              = "../../terraform-modules/terraform-azure-public-ip"
   name                = "${var.nat_gateway_name}-pip"
   location            = var.location
   resource_group_name = var.resource_group_name
