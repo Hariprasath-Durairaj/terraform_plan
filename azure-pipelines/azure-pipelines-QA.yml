@@ -22,10 +22,15 @@ stages:
             persistCredentials: true
 
           - script: |
-              echo "Installing tflint..."
-              curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-              tflint --init
-              tflint --chdir=$(workingDirectory) || echo "⚠️ TFLint warnings detected, but not failing the pipeline."
+              #echo "Installing tflint..."
+              Invoke-WebRequest -Uri "https://github.com/terraform-linters/tflint/releases/download/v0.50.3/tflint_windows_amd64.zip" -OutFile "tflint.zip"
+              #curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+              Expand-Archive -Path "tflint.zip" -DestinationPath "."
+              $env:Path += ";$(System.DefaultWorkingDirectory)"
+              .\tflint --init
+              .\tflint --chdir=$(workingDirectory)
+               #tflint --init
+              #tflint --chdir=$(workingDirectory) || echo "⚠️ TFLint warnings detected, but not failing the pipeline."
             displayName: 'Run tflint'
 
   - stage: Scan
