@@ -26,12 +26,6 @@ stages:
             inputs:
               targetType: inline
               script: |
-                Write-Host "Downloading TFLint..."
-                $url = "https://github.com/terraform-linters/tflint/releases/latest/download/tflint_windows_amd64.zip"
-                Invoke-WebRequest -Uri $url -OutFile "$(Agent.TempDirectory)\tflint.zip"
-                Expand-Archive -Path "$(Agent.TempDirectory)\tflint.zip" -DestinationPath "$(Agent.TempDirectory)\tflint"
-                $env:PATH += ";$(Agent.TempDirectory)\tflint"
-                tflint --version
                 tflint --init
                 tflint --chdir=$(workingDirectory) || Write-Warning "⚠️  TFLint warnings detected, but not failing the pipeline."
 
