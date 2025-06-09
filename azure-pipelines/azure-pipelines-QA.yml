@@ -60,6 +60,7 @@ stages:
 
           - script: |
               echo "Running Checkov scan..."
+              set PATH=C:\Program Files\Python313\;C:\Program Files\Python313\Scripts\;%PATH%
               checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
             displayName: Run Checkov with SARIF Output
 
