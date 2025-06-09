@@ -37,6 +37,11 @@ stages:
         displayName: Checkov Terraform Scan
         steps:
           - checkout: self
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.x'
+            addToPath: true
+          displayName: Install Python
           - script: |
               echo "Installing Checkov..."
               pip install checkov
