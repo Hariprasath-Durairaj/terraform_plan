@@ -45,25 +45,23 @@ stages:
         steps:
           - checkout: self
 
-#          - task: UsePythonVersion@0
- #           displayName: Install Python 3.x
-  #          inputs:
-   #           versionSpec: 3.x
-    #          addToPath: true
-
-          - script: |
-              echo "Adding Python to PATH"
-              set PATH=C:\Program Files\Python313\;C:\Program Files\Python313\Scripts\;%PATH%
-              echo "Installing Checkov..."
-              pip install --disable-pip-version-check --no-cache-dir checkov
+          - task: PowerShell@2
             displayName: Install Checkov
+            inputs:
+              targetType: inline
+              script: |
+                $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
+                Write-Host "Installing Checkov..."
+                pip install --disable-pip-version-check --no-cache-dir checkov
 
-          - script: |
-              echo "Running Checkov scan..."
-              $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
-              checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
+          - task: PowerShell@2
             displayName: Run Checkov with SARIF Output
-            shell: pwsh
+            inputs:
+              targetType: inline
+              script: |
+                $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
+                Write-Host "Running Checkov scan..."
+                checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif
 
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF Report
