@@ -52,6 +52,8 @@ stages:
     #          addToPath: true
 
           - script: |
+              echo "Adding Python to PATH"
+              set PATH=C:\Program Files\Python313\;C:\Program Files\Python313\Scripts\;%PATH%
               echo "Installing Checkov..."
               pip install --disable-pip-version-check --no-cache-dir checkov
             displayName: Install Checkov
