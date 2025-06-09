@@ -21,21 +21,20 @@ stages:
           - checkout: self
             persistCredentials: true
 
-- task: PowerShell@2
-  displayName: Install and run TFLint
-  inputs:
-    targetType: inline
-    script: |
-      tflint --init
-      if (-not $?) {
-        Write-Warning "⚠️ TFLint init failed, but continuing."
-      }
+          - task: PowerShell@2
+            displayName: Install and run TFLint
+            inputs:
+              targetType: inline
+              script: |
+                tflint --init
+                if (-not $?) {
+                  Write-Warning "⚠️ TFLint init failed, but continuing."
+                }
 
-      tflint --chdir=$(workingDirectory)
-      if (-not $?) {
-        Write-Warning "⚠️ TFLint warnings detected, but not failing the pipeline."
-      }
-
+                tflint --chdir=$(workingDirectory)
+                if (-not $?) {
+                  Write-Warning "⚠️ TFLint warnings detected, but not failing the pipeline."
+                }
 
   - stage: Scan
     displayName: Terraform Security Scan
