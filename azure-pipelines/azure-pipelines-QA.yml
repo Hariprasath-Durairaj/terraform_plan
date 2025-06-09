@@ -20,12 +20,20 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
-          - script: |
-              echo "Installing tflint..."
-              curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-              tflint --init
-              tflint --chdir=$(workingDirectory) || echo "⚠️ TFLint warnings detected, but not failing the pipeline."
-            displayName: Run tflint
+
+          - task: PowerShell@2
+            displayName: Install and run TFLint
+            inputs:
+              targetType: inline
+              script: |
+                Write-Host "Downloading TFLint..."
+                $url = "https://github.com/terraform-linters/tflint/releases/latest/download/tflint_windows_amd64.zip"
+                Invoke-WebRequest -Uri $url -OutFile "$(Agent.TempDirectory)\tflint.zip"
+                Expand-Archive -Path "$(Agent.TempDirectory)\tflint.zip" -DestinationPath "$(Agent.TempDirectory)\tflint"
+                $env:PATH += ";$(Agent.TempDirectory)\tflint"
+                tflint --version
+                tflint --init
+                tflint --chdir=$(workingDirectory) || Write-Warning "⚠️  TFLint warnings detected, but not failing the pipeline."
 
   - stage: Scan
     displayName: Terraform Security Scan
@@ -35,19 +43,23 @@ stages:
         displayName: Checkov Terraform Scan
         steps:
           - checkout: self
+
           - task: UsePythonVersion@0
+            displayName: Install Python 3.x
             inputs:
-              versionSpec: '3.x'
+              versionSpec: 3.x
               addToPath: true
-            displayName: Install Python
+
           - script: |
               echo "Installing Checkov..."
-              pip install checkov
+              pip install --disable-pip-version-check --no-cache-dir checkov
             displayName: Install Checkov
+
           - script: |
               echo "Running Checkov scan..."
               checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
             displayName: Run Checkov with SARIF Output
+
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF Report
             inputs:
@@ -64,22 +76,27 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+
           - script: |
-              rm -rf .terraform
-              rm -f .terraform.lock.hcl
+              rd /s /q .terraform
+              del /q .terraform.lock.hcl 2>NUL
             displayName: Clean .terraform and lockfile
+
           - script: |
               echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
               echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(servicePrincipalId)"
               echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
               echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
             displayName: Set OIDC Auth Variables
+
           - task: TerraformInstaller@1
-            displayName: Install Terraform
+            displayName: Install Terraform 1.5.7
             inputs:
               terraformVersion: 1.5.7
+
           - script: terraform -version
             displayName: Show Terraform Version
+
           - task: TerraformTaskV4@4
             displayName: Terraform Init
             inputs:
