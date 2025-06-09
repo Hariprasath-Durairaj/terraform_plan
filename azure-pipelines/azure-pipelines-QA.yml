@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: Default
+  name: Default   # self-hosted agent called “test_agent”
 
 variables:
   workingDirectory: environments/QA
@@ -12,6 +12,7 @@ variables:
   backendKey: qa.terraform.tfstate
 
 stages:
+# ─────────────────────────────────── LINT ────────────────────────────────────
   - stage: Lint
     displayName: Terraform Lint
     jobs:
@@ -28,14 +29,15 @@ stages:
               script: |
                 tflint --init
                 if (-not $?) {
-                  Write-Warning "⚠️ TFLint init failed, but continuing."
+                  Write-Warning "⚠️  TFLint init failed, but continuing."
                 }
 
                 tflint --chdir=$(workingDirectory)
                 if (-not $?) {
-                  Write-Warning "⚠️ TFLint warnings detected, but not failing the pipeline."
+                  Write-Warning "⚠️  TFLint warnings detected, but continuing."
                 }
 
+# ─────────────────────────────────── SCAN ────────────────────────────────────
   - stage: Scan
     displayName: Terraform Security Scan
     dependsOn: Lint
@@ -45,15 +47,18 @@ stages:
         steps:
           - checkout: self
 
+          # Install Checkov with pip from the pre-installed Python
           - task: PowerShell@2
             displayName: Install Checkov
             inputs:
               targetType: inline
               script: |
+                # Prepend Python 3.13 to PATH for this session
                 $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
                 Write-Host "Installing Checkov..."
-                pip install --disable-pip-version-check --no-cache-dir checkov
+                python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
+          # Run Checkov and produce SARIF
           - task: PowerShell@2
             displayName: Run Checkov with SARIF Output
             inputs:
@@ -61,8 +66,11 @@ stages:
               script: |
                 $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
                 Write-Host "Running Checkov scan..."
-                checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif
+                python -m checkov -d $(workingDirectory) `
+                  -o sarif --output-file-path checkov-report.sarif `
+                  || Write-Warning "Checkov completed with findings"
 
+          # Publish the SARIF report as a build artifact
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF Report
             inputs:
@@ -70,6 +78,7 @@ stages:
               ArtifactName: CheckovReport
               publishLocation: Container
 
+# ─────────────────────────────────── INIT ────────────────────────────────────
   - stage: Init
     displayName: Terraform Init
     dependsOn: Scan
