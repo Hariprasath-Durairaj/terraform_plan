@@ -60,9 +60,10 @@ stages:
 
           - script: |
               echo "Running Checkov scan..."
-              set PATH=C:\Program Files\Python313\;C:\Program Files\Python313\Scripts\;%PATH%
+              $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
               checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
             displayName: Run Checkov with SARIF Output
+            shell: pwsh
 
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF Report
