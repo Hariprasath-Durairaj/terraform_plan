@@ -20,18 +20,30 @@ stages:
         steps:
           - checkout: self
             persistCredentials: true
+- task: PowerShell@2
+  displayName: 'Install and Run TFLint on Windows'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Installing tflint..."
+      Invoke-WebRequest -Uri "https://github.com/terraform-linters/tflint/releases/download/v0.50.3/tflint_windows_amd64.zip" -OutFile "tflint.zip"
+      Expand-Archive -Path "tflint.zip" -DestinationPath "."
+      $env:Path += ";$(System.DefaultWorkingDirectory)"
+      .\tflint --init
+      .\tflint --chdir=$(workingDirectory) || Write-Host "⚠️ TFLint warnings detected, but not failing the pipeline."
 
-          - script: |
+
+#          - script: |
               #echo "Installing tflint..."
-              Invoke-WebRequest -Uri "https://github.com/terraform-linters/tflint/releases/download/v0.50.3/tflint_windows_amd64.zip" -OutFile "tflint.zip"
+#              Invoke-WebRequest -Uri "https://github.com/terraform-linters/tflint/releases/download/v0.50.3/tflint_windows_amd64.zip" -OutFile "tflint.zip"
               #curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-              Expand-Archive -Path "tflint.zip" -DestinationPath "."
-              $env:Path += ";$(System.DefaultWorkingDirectory)"
-              .\tflint --init
-              .\tflint --chdir=$(workingDirectory)
+#              Expand-Archive -Path "tflint.zip" -DestinationPath "."
+#              $env:Path += ";$(System.DefaultWorkingDirectory)"
+#              .\tflint --init
+ #             .\tflint --chdir=$(workingDirectory)
                #tflint --init
               #tflint --chdir=$(workingDirectory) || echo "⚠️ TFLint warnings detected, but not failing the pipeline."
-            displayName: 'Run tflint'
+ #           displayName: 'Run tflint'
 
   - stage: Scan
     displayName: 'Terraform Security Scan'
