@@ -14,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "this" {
   dns_prefix          = var.dns_prefix
   kubernetes_version  = var.kubernetes_version
   node_resource_group = var.node_resource_group
-
+  disable_local_accounts = var.disable_local_accounts
   # ── SYSTEM NODE-POOL ──────────────────────────────────────────────────────
   default_node_pool {
     name                        = var.default_node_pool.name
