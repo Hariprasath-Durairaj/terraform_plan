@@ -162,7 +162,7 @@ module "aks" {
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
   # ── cluster options ─────────────────────────────────────────────
-  private_cluster_enabled         = var.private_cluster_enabled
+  private_cluster_enabled         = true
   enable_private_cluster_public_fqdn = false
   api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
