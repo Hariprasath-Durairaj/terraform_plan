@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: Default        # self-hosted Windows agent
+  name: Default          # self-hosted Windows agent
 
 variables:
   workingDirectory: environments/QA
@@ -28,10 +28,10 @@ stages:
               targetType: inline
               script: |
                 tflint --init
-                if (-not $?) { Write-Warning "⚠️ TFLint init failed, continuing." }
+                if (-not $?) { Write-Warning "⚠️  TFLint init failed, continuing." }
 
                 tflint --chdir=$(workingDirectory)
-                if (-not $?) { Write-Warning "⚠️ TFLint warnings detected, continuing." }
+                if (-not $?) { Write-Warning "⚠️  TFLint warnings detected, continuing." }
 
 # ────────────────────────────── SCAN ──────────────────────────────
   - stage: Scan
@@ -53,32 +53,32 @@ stages:
                 Write-Host "Installing Checkov..."
                 python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          # 2) Run Checkov via python -m and write SARIF
+          # 2) Run Checkov and write SARIF into the staging directory
           - task: PowerShell@2
             displayName: Run Checkov ➜ SARIF
             inputs:
               targetType: inline
               script: |
                 $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
-                $sarif = "$(System.DefaultWorkingDirectory)\$(workingDirectory)\checkov-report.sarif"
+                New-Item -ItemType Directory -Force -Path "$(Build.ArtifactStagingDirectory)" | Out-Null
+                $sarif = "$(Build.ArtifactStagingDirectory)\checkov-report.sarif"
 
                 Write-Host "Running Checkov scan..."
                 python -m checkov -d $(workingDirectory) `
                   -o sarif --output-file-path "$sarif"
 
-                # Keep pipeline green even if Checkov finds issues
                 if ($LASTEXITCODE -ne 0) {
-                  Write-Warning "⚠️ Checkov finished with findings (non-zero exit). Continuing pipeline."
-                  exit 0
+                  Write-Warning "⚠️  Checkov finished with findings (non-zero exit). Continuing pipeline."
+                  exit 0     # prevent task failure
                 }
 
-          # 3) Publish SARIF
+          # 3) Publish SARIF artifact
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF
             inputs:
-              PathtoPublish: '$(System.DefaultWorkingDirectory)\$(workingDirectory)\checkov-report.sarif'
-              ArtifactName: CheckovReport
-              publishLocation: Container
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'CheckovReport'
+              publishLocation: 'Container'
 
 # ───────────────────────────── INIT ───────────────────────────────
   - stage: Init
