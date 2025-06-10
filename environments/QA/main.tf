@@ -78,13 +78,13 @@ module "key_vault" {
   tags                = var.tags
 }
 
-module "acr" {
-  source              = "../../terraform-modules/terraform-azure-acr"
-  name                = var.acr_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
+#module "acr" {
+#  source              = "../../terraform-modules/terraform-azure-acr"
+#  name                = var.acr_name
+#  location            = var.location
+#  resource_group_name = var.resource_group_name
+#  tags                = var.tags
+#}
 
 module "disk_encryption_set" {
   source              = "../../terraform-modules/terraform-azure-disk-encryption-set"
