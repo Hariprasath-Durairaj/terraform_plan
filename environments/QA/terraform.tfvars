@@ -92,7 +92,7 @@ default_node_pool = {
   enable_auto_scaling         = true
   min_count                   = 1
   max_count                   = 3
-  max_pods                    = 30
+  max_pods                    = 50
   os_disk_size_gb             = 50
   type                        = "System"
   node_labels                 = { type = "system" }
@@ -110,7 +110,7 @@ user_node_pools = {
     node_count          = 3
     min_count           = 3
     max_count           = 5
-    max_pods            = 60
+    max_pods            = 50
     mode                = "User"
     node_labels         = { app = "bitnobi" }
     vnet_subnet_id      = "" # Always empty in tfvars!
@@ -127,7 +127,7 @@ user_node_pools = {
     node_count          = 3
     min_count           = 3
     max_count           = 5
-    max_pods            = 30
+    max_pods            = 50
     mode                = "User"
     node_labels         = { app = "candig" }
     vnet_subnet_id      = ""
@@ -144,7 +144,7 @@ user_node_pools = {
     node_count          = 3
     min_count           = 3
     max_count           = 5
-    max_pods            = 30
+    max_pods            = 50
     mode                = "User"
     node_labels         = { app = "keycloak" }
     vnet_subnet_id      = ""
@@ -161,7 +161,7 @@ user_node_pools = {
     node_count          = 3
     min_count           = 3
     max_count           = 5
-    max_pods            = 30
+    max_pods            = 50
     mode                = "User"
     node_labels         = { app = "integrateai" }
     vnet_subnet_id      = ""
@@ -178,7 +178,7 @@ user_node_pools = {
     node_count          = 3
     min_count           = 3
     max_count           = 5
-    max_pods            = 30
+    max_pods            = 50
     mode                = "User"
     node_labels         = { app = "webapp" }
     vnet_subnet_id      = ""
