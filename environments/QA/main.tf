@@ -131,6 +131,11 @@ module "app_gateway" {
   resource_group_name  = var.resource_group_name
   subnet_id            = module.vnet.subnet_ids[var.app_gateway_subnet_name]
   public_ip_id         = module.public_ip_appgw.public_ip_id
+  # HTTPS settings
+  https_frontend_port       = 443
+  backend_https_port        = 443
+  ssl_certificate_secret_id = var.appgw_ssl_cert_secret_id
+  ssl_certificate_name      = "appgw-ssl-cert"
   frontend_port        = var.app_gateway_frontend_port
   backend_port         = var.app_gateway_backend_port
   backend_ip_addresses = var.app_gateway_backend_ip_addresses
