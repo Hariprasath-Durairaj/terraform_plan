@@ -173,7 +173,7 @@ module "aks" {
   auto_rotate_secrets = true
 
   # ── integrations ────────────────────────────────────────────────
-  acr_id                     = module.acr.acr_id
+  acr_id                     = var.acr_id
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
   # ── cluster options ─────────────────────────────────────────────
