@@ -23,17 +23,19 @@ resource "azurerm_web_application_firewall_policy" "this" {
         variable_name = "RequestBody"
       }
       operator     = "Contains"
-      match_values = ["$${jndi:"]
+      match_values = ["$${jndi:"]    # double $$ escapes Terraform interpolation
       transforms   = ["Lowercase"]
     }
   }
 
+  # ── Any additional user-defined custom rules ─────────────────────────────
   dynamic "custom_rules" {
     for_each = var.custom_rules
     content {
       name      = custom_rules.value.name
       priority  = custom_rules.value.priority
       rule_type = custom_rules.value.rule_type
+      action    = custom_rules.value.action
 
       match_conditions {
         match_variables {
@@ -42,20 +44,15 @@ resource "azurerm_web_application_firewall_policy" "this" {
         operator     = "IPMatch"
         match_values = custom_rules.value.match_values
       }
-
-      action = custom_rules.value.action
     }
   }
 
+  # ── Combined managed rules block ─────────────────────────────────────────
   managed_rules {
     managed_rule_set {
       type    = "OWASP"
       version = var.owasp_version
     }
-  }
-
-  # ── Microsoft Bot Manager ─────────────────────────────────────────────────
-  managed_rules {
     managed_rule_set {
       type    = "Microsoft_BotManagerRuleSet"
       version = "1.0"
