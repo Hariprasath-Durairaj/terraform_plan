@@ -127,4 +127,9 @@ variable "ingress_application_gateway_id" {
   default     = null
 }
 
+variable "disable_local_accounts" {
+  description = "Disable Kubernetes local accounts (legacy backdoor access)"
+  type        = bool
+  default     = false
+}
 
