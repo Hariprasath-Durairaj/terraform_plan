@@ -37,3 +37,8 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "ssl_certificate_secret_id" {
+  description = "KeyVault Secret ID for the App Gateway PFX"
+  type        = string
+}
