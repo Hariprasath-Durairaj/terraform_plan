@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: Default   # self-hosted Windows agent “test_agent”
+  name: Default        # self-hosted Windows agent
 
 variables:
   workingDirectory: environments/QA
@@ -43,7 +43,7 @@ stages:
         steps:
           - checkout: self
 
-          # 1) Install Checkov via pip
+          # 1) Install Checkov
           - task: PowerShell@2
             displayName: Install Checkov
             inputs:
@@ -53,7 +53,7 @@ stages:
                 Write-Host "Installing Checkov..."
                 python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          # 2) Run Checkov and create SARIF file
+          # 2) Run Checkov via python -m and write SARIF
           - task: PowerShell@2
             displayName: Run Checkov ➜ SARIF
             inputs:
@@ -63,14 +63,16 @@ stages:
                 $sarif = "$(System.DefaultWorkingDirectory)\$(workingDirectory)\checkov-report.sarif"
 
                 Write-Host "Running Checkov scan..."
-                checkov -d $(workingDirectory) -o sarif --output-file-path "$sarif"
+                python -m checkov -d $(workingDirectory) `
+                  -o sarif --output-file-path "$sarif"
 
+                # Keep pipeline green even if Checkov finds issues
                 if ($LASTEXITCODE -ne 0) {
-                  Write-Warning "⚠️ Checkov finished with findings (non-zero exit). Keeping pipeline green."
-                  exit 0   # prevent task failure
+                  Write-Warning "⚠️ Checkov finished with findings (non-zero exit). Continuing pipeline."
+                  exit 0
                 }
 
-          # 3) Publish SARIF file
+          # 3) Publish SARIF
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF
             inputs:
@@ -78,7 +80,7 @@ stages:
               ArtifactName: CheckovReport
               publishLocation: Container
 
-# ────────────────────────────── INIT ──────────────────────────────
+# ───────────────────────────── INIT ───────────────────────────────
   - stage: Init
     displayName: Terraform Init
     dependsOn: Scan
