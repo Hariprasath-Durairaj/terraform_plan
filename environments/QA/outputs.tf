@@ -54,3 +54,7 @@ output "private_dns_zone_id" {
   description = "ID of the Private DNS zone"
   value       = module.private_dns.zone_id
 }
+output "aks_nsg_id" {
+  value = azurerm_network_security_group.aks.id
+}
+
