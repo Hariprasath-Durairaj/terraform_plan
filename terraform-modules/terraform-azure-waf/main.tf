@@ -23,7 +23,7 @@ resource "azurerm_web_application_firewall_policy" "this" {
         variable_name = "RequestBody"
       }
       operator     = "Contains"
-      match_values = ['\${jndi:']
+      match_values = ["$${jndi:"]
       transforms   = ["Lowercase"]
     }
   }
