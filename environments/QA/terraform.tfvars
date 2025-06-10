@@ -192,6 +192,7 @@ network_plugin                  = "azure"
 dns_service_ip                  = "10.2.0.10"
 service_cidr                    = "10.2.0.0/24"
 api_server_authorized_ip_ranges = ["203.0.113.10/32"]
+upgrade_channel = "stable"
 
 ########################
 # 9. Log Analytics
