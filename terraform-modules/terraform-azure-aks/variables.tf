@@ -133,3 +133,8 @@ variable "disable_local_accounts" {
   default     = false
 }
 
+variable "enable_azure_policy" {
+  description = "Whether to enable the Azure Policy add-on on AKS"
+  type        = bool
+  default     = false
+}
