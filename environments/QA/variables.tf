@@ -109,6 +109,7 @@ variable "des_name" {
 variable "key_vault_key_id" {
   description = "Customer-managed key URI"
   type        = string
+  default     = ""
 }
 
 ############################
