@@ -16,8 +16,8 @@ module "vnet" {
    subnet_network_security_group_ids = {
  # Keys must match the subnet names defined above:
  aks                = module.nsg.id
- appgw              = module.appgw_nsg.id      # if you have a separate NSG for the App Gateway subnet
-AzureBastionSubnet = module.bastion_nsg.id    # if you want Bastion protected
+     # if you have a separate NSG for the App Gateway subnet
+   # if you want Bastion protected
 }
 }
 
