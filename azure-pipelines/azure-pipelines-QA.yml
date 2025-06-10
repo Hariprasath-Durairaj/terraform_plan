@@ -11,8 +11,10 @@ variables:
   backendContainerName: tfstate
   backendKey: qa.terraform.tfstate
 
+###############################################################################
+# 1. LINT  ─────────────────────────────────────────────────────────────────────
+###############################################################################
 stages:
-# ────────────────────────────── LINT ──────────────────────────────
   - stage: Lint
     displayName: Terraform Lint
     jobs:
@@ -33,7 +35,9 @@ stages:
                 tflint --chdir=$(workingDirectory)
                 if (-not $?) { Write-Warning "⚠️  TFLint warnings detected, continuing." }
 
-# ────────────────────────────── SCAN ──────────────────────────────
+###############################################################################
+# 2. SCAN  ─────────────────────────────────────────────────────────────────────
+###############################################################################
   - stage: Scan
     displayName: Terraform Security Scan
     dependsOn: Lint
@@ -43,7 +47,7 @@ stages:
         steps:
           - checkout: self
 
-          # 1) Install Checkov
+          # Install Checkov
           - task: PowerShell@2
             displayName: Install Checkov
             inputs:
@@ -53,7 +57,7 @@ stages:
                 Write-Host "Installing Checkov..."
                 python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          # 2) Run Checkov and write SARIF into the staging directory
+          # Run Checkov & create SARIF
           - task: PowerShell@2
             displayName: Run Checkov ➜ SARIF
             inputs:
@@ -64,15 +68,15 @@ stages:
                 $sarif = "$(Build.ArtifactStagingDirectory)\checkov-report.sarif"
 
                 Write-Host "Running Checkov scan..."
-                python -m checkov -d $(workingDirectory) `
+                & "C:\Program Files\Python313\Scripts\checkov.exe" -d $(workingDirectory) `
                   -o sarif --output-file-path "$sarif"
 
                 if ($LASTEXITCODE -ne 0) {
                   Write-Warning "⚠️  Checkov finished with findings (non-zero exit). Continuing pipeline."
-                  exit 0     # prevent task failure
+                  exit 0   # prevents task failure
                 }
 
-          # 3) Publish SARIF artifact
+          # Publish SARIF as build artifact
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF
             inputs:
@@ -80,7 +84,9 @@ stages:
               ArtifactName: 'CheckovReport'
               publishLocation: 'Container'
 
-# ───────────────────────────── INIT ───────────────────────────────
+###############################################################################
+# 3. INIT  ─────────────────────────────────────────────────────────────────────
+###############################################################################
   - stage: Init
     displayName: Terraform Init
     dependsOn: Scan
