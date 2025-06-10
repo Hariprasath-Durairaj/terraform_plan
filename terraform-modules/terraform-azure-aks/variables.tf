@@ -145,3 +145,8 @@ variable "upgrade_channel" {
   default     = "stable"
 }
 
+ variable "auto_rotate_secrets" {
+   description = "Enable automatic rotation of CSI Secrets Store driver secrets"
+   type        = bool
+   default     = false
+ }
