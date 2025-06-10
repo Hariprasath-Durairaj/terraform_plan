@@ -81,3 +81,28 @@ variable "custom_rules" {
   type        = list(any)
   default     = []
 }
+
+variable "https_frontend_port" {
+  description = "HTTPS port for the Application Gateway"
+  type        = number
+  default     = 443
+}
+
+variable "backend_https_port" {
+  description = "HTTPS port for backend HTTP settings"
+  type        = number
+  default     = 443
+}
+
+variable "ssl_certificate_secret_id" {
+  description = "Key Vault Secret ID of the PFX certificate for HTTPS"
+  type        = string
+  default     = ""
+}
+
+variable "ssl_certificate_name" {
+  description = "Name for the SSL certificate resource inside AGW"
+  type        = string
+  default     = "appgw-ssl-cert"
+}
+
