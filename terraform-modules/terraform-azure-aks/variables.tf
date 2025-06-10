@@ -163,3 +163,9 @@ variable "disk_encryption_set_id" {
   default     = ""
 }
 
+variable "enable_private_cluster_public_fqdn" {
+  description = "If false, disables the public FQDN on a private cluster"
+  type        = bool
+  default     = true
+}
+
