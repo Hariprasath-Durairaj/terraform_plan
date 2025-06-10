@@ -271,6 +271,10 @@ variable "private_cluster_enabled" {
   type        = bool
   default     = false
 }
+variable "appgw_ssl_cert_secret_id" {
+  description = "Key Vault secret ID for the Application Gateway SSL certificate"
+  type        = string
+}
 
 
 
