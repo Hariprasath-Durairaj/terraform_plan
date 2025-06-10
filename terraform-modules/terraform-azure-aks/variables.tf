@@ -150,3 +150,16 @@ variable "upgrade_channel" {
    type        = bool
    default     = false
  }
+
+variable "enable_disk_encryption_set" {
+  description = "Whether to encrypt node OS disks with a Disk Encryption Set"
+  type        = bool
+  default     = false
+}
+
+variable "disk_encryption_set_id" {
+  description = "Resource ID of the Azure Disk Encryption Set to use for node OS disks"
+  type        = string
+  default     = ""
+}
+
