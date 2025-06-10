@@ -138,3 +138,10 @@ variable "enable_azure_policy" {
   type        = bool
   default     = false
 }
+
+variable "upgrade_channel" {
+  description = "AKS upgrade channel (stable | rapid | patch | node-image)"
+  type        = string
+  default     = "stable"
+}
+
