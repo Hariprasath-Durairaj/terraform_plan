@@ -272,6 +272,7 @@ variable "private_cluster_enabled" {
   type        = bool
   default     = false
 }
+
 variable "appgw_ssl_cert_secret_id" {
   description = "Key Vault secret ID for the Application Gateway SSL certificate"
   type        = string
@@ -287,4 +288,16 @@ variable "key_vault_secret_id" {
   type        = string
 }
 
+############################
+# 11. New variables to declare
+############################
 
+variable "upgrade_channel" {
+  description = "App Gateway upgrade channel (e.g. Stable, Preview)"
+  type        = string
+}
+
+variable "public_network_access_enabled" {
+  description = "Enable public network access on the Application Gateway"
+  type        = bool
+}
