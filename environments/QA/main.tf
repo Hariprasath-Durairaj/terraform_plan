@@ -15,7 +15,8 @@ module "vnet" {
   tags                = var.tags
    subnet_network_security_group_ids = {
  # Keys must match the subnet names defined above:
- aks                = module.nsg.id
+ aks = module.nsg.aks_nsg_id
+
      # if you have a separate NSG for the App Gateway subnet
    # if you want Bastion protected
 }
