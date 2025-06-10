@@ -72,6 +72,7 @@ dynamic "ingress_application_gateway" {
 
   # ── PRIVATE / API-SERVER SETTINGS ─────────────────────────────────────────
   private_cluster_enabled = var.private_cluster_enabled
+  private_cluster_public_fqdn_enabled   = var.enable_private_cluster_public_fqdn
 
   api_server_access_profile {
     authorized_ip_ranges = var.api_server_authorized_ip_ranges
