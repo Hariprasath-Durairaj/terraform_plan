@@ -157,6 +157,7 @@ module "aks" {
   node_resource_group = var.node_resource_group
   disable_local_accounts = true
   enable_azure_policy            = true
+  auto_rotate_secrets = true
 
   # ── integrations ────────────────────────────────────────────────
   acr_id                     = module.acr.acr_id
