@@ -14,14 +14,12 @@ resource "azurerm_kubernetes_cluster" "this" {
   dns_prefix          = var.dns_prefix
   kubernetes_version  = var.kubernetes_version
   node_resource_group = var.node_resource_group
-  disable_local_accounts = var.disable_local_accounts
-  upgrade_channel     = var.upgrade_channel
+
   # ── SYSTEM NODE-POOL ──────────────────────────────────────────────────────
   default_node_pool {
     name                        = var.default_node_pool.name
     vm_size                     = var.default_node_pool.vm_size
     temporary_name_for_rotation = var.default_node_pool.temporary_name_for_rotation
-    disk_encryption_set_id = var.enable_disk_encryption_set ? var.disk_encryption_set_id : null
     enable_auto_scaling         = var.default_node_pool.enable_auto_scaling
     min_count                   = var.default_node_pool.min_count
     max_count                   = var.default_node_pool.max_count
@@ -31,6 +29,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     vnet_subnet_id              = var.default_node_pool.vnet_subnet_id
     zones                       = var.default_node_pool.availability_zones
     tags                        = var.default_node_pool.tags
+    type                        = var.default_node_pool.type
   }
 
   # ── IDENTITY & RBAC ───────────────────────────────────────────────────────
@@ -39,19 +38,6 @@ resource "azurerm_kubernetes_cluster" "this" {
   }
   role_based_access_control_enabled = true
 
-addon_profile {
-   azure_policy {
-    enabled = var.enable_azure_policy
-  }
-}
-
-  addon_profile {
-    azure_keyvault_secrets_provider {
-      enabled                = var.auto_rotate_secrets
-      rotation_poll_interval = "2m"
-    }
-  }
-
   # ── CLUSTER NETWORKING ────────────────────────────────────────────────────
   network_profile {
     network_plugin = var.network_plugin
@@ -59,23 +45,19 @@ addon_profile {
     service_cidr   = var.service_cidr
   }
 
-# ── OPTIONAL: Application-Gateway Ingress Controller (AGIC) ───────────────
-dynamic "ingress_application_gateway" {
-  # emit the block only if var.enable_ingress_application_gateway == true
-  for_each = var.enable_ingress_application_gateway ? [1] : []
-  content {
-    gateway_id = var.ingress_application_gateway_id   # required
-    # subnet_id  = var.ingress_application_gateway_subnet_id  # ← add if you need it
-  }
-}
-
-
   # ── PRIVATE / API-SERVER SETTINGS ─────────────────────────────────────────
   private_cluster_enabled = var.private_cluster_enabled
-  private_cluster_public_fqdn_enabled   = var.enable_private_cluster_public_fqdn
 
   api_server_access_profile {
     authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  }
+
+  # ── OPTIONAL: Application-Gateway Ingress Controller (AGIC) ───────────────
+  dynamic "ingress_application_gateway" {
+    for_each = var.enable_ingress_application_gateway ? [1] : []
+    content {
+      gateway_id = var.ingress_application_gateway_id
+    }
   }
 
   # ── OPTIONAL: Azure Monitor agent (OMS) ───────────────────────────────────
@@ -108,7 +90,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
 
   vm_size         = each.value.vm_size
   os_disk_size_gb = each.value.os_disk_size_gb
-  disk_encryption_set_id = var.enable_disk_encryption_set ? var.disk_encryption_set_id : null
   node_count      = each.value.node_count
   max_pods        = each.value.max_pods
   mode            = each.value.mode
