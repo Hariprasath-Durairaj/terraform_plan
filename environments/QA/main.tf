@@ -156,6 +156,7 @@ module "aks" {
   kubernetes_version  = var.kubernetes_version
   node_resource_group = var.node_resource_group
   disable_local_accounts = true
+  enable_azure_policy            = true
 
   # ── integrations ────────────────────────────────────────────────
   acr_id                     = module.acr.acr_id
