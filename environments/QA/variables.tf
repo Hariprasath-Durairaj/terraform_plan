@@ -276,6 +276,15 @@ variable "appgw_ssl_cert_secret_id" {
   type        = string
 }
 
+variable "existing_acr_id" {
+  description = "Full resource ID of the existing ACR"
+  type        = string
+}
+
+variable "existing_acr_login_server" {
+  description = "Login server for the existing ACR"
+  type        = string
+}
 
 
 
