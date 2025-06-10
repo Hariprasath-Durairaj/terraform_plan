@@ -105,4 +105,8 @@ variable "ssl_certificate_name" {
   type        = string
   default     = "appgw-ssl-cert"
 }
+variable "key_vault_secret_id" {
+  type        = string
+  description = "Full Key Vault Secret URI, e.g. https://<vault>.vault.azure.net/secrets/<secret-name>[/<version>]"
+}
 
