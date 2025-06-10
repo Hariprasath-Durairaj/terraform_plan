@@ -67,6 +67,7 @@ key_vault_name   = "dhdp-qa-kv"
 des_name         = "dhdp-qa-des"
 key_vault_secret_id = "https://kv.vault.azure.net/secrets/appgw-pfx"
 
+
 public_network_access_enabled = false
 
 ########################
