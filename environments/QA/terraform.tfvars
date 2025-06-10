@@ -66,6 +66,7 @@ private_dns_link_name = "acr-dns-link"
 key_vault_name   = "dhdp-qa-kv"
 des_name         = "dhdp-qa-des"
 key_vault_key_id = "https://dhdp-qa-kv.vault.azure.net/keys/dhdp-qa-cmk/0123456789abcdef0123456789abcdef"
+public_network_access_enabled = false
 
 ########################
 # 6. Backup
