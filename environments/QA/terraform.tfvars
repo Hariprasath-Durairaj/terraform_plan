@@ -7,14 +7,14 @@
 ########################
 prefix              = "dhdp-qa"
 location            = "canadacentral"
-resource_group_name = "dhdp-qa-rg"
+resource_group_name = "dhdp-aks-qa"
 tenant_id           = "c25c5028-2135-4990-9b82-d8c62774306a"
 
 tags = {
   environment  = "QA"
   businessUnit = "Corp-IT"
   application  = "DHDP"
-  owner        = "hp@corp.com"
+  owner        = "DHDP"
   managedBy    = "Terraform"
   createdBy    = "AzureDevOps"
   criticality  = "Standard"
@@ -65,7 +65,8 @@ private_dns_link_name = "acr-dns-link"
 ########################
 key_vault_name   = "dhdp-qa-kv"
 des_name         = "dhdp-qa-des"
-key_vault_key_id = "https://dhdp-qa-kv.vault.azure.net/keys/dhdp-qa-cmk/0123456789abcdef0123456789abcdef"
+key_vault_secret_id = "https://kv.vault.azure.net/secrets/appgw-pfx"
+
 public_network_access_enabled = false
 
 ########################
