@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: Default          # self-hosted agent “test_agent”
+  name: Default   # self-hosted Windows agent “test_agent”
 
 variables:
   workingDirectory: environments/QA
@@ -12,7 +12,7 @@ variables:
   backendKey: qa.terraform.tfstate
 
 stages:
-# ──────────────────────────────── LINT ────────────────────────────────
+# ────────────────────────────── LINT ──────────────────────────────
   - stage: Lint
     displayName: Terraform Lint
     jobs:
@@ -33,7 +33,7 @@ stages:
                 tflint --chdir=$(workingDirectory)
                 if (-not $?) { Write-Warning "⚠️ TFLint warnings detected, continuing." }
 
-# ──────────────────────────────── SCAN ────────────────────────────────
+# ────────────────────────────── SCAN ──────────────────────────────
   - stage: Scan
     displayName: Terraform Security Scan
     dependsOn: Lint
@@ -43,7 +43,7 @@ stages:
         steps:
           - checkout: self
 
-          # Install Checkov
+          # 1) Install Checkov via pip
           - task: PowerShell@2
             displayName: Install Checkov
             inputs:
@@ -53,30 +53,32 @@ stages:
                 Write-Host "Installing Checkov..."
                 python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          # Run Checkov
+          # 2) Run Checkov and create SARIF file
           - task: PowerShell@2
-            displayName: Run Checkov with SARIF Output
+            displayName: Run Checkov ➜ SARIF
             inputs:
               targetType: inline
               script: |
                 $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
+                $sarif = "$(System.DefaultWorkingDirectory)\$(workingDirectory)\checkov-report.sarif"
+
                 Write-Host "Running Checkov scan..."
-                python -m checkov -d $(workingDirectory) `
-                  -o sarif --output-file-path checkov-report.sarif
+                checkov -d $(workingDirectory) -o sarif --output-file-path "$sarif"
+
                 if ($LASTEXITCODE -ne 0) {
                   Write-Warning "⚠️ Checkov finished with findings (non-zero exit). Keeping pipeline green."
-                  exit 0
+                  exit 0   # prevent task failure
                 }
 
-          # Publish SARIF report
+          # 3) Publish SARIF file
           - task: PublishBuildArtifacts@1
-            displayName: Publish Checkov SARIF Report
+            displayName: Publish Checkov SARIF
             inputs:
-              PathtoPublish: checkov-report.sarif
+              PathtoPublish: '$(System.DefaultWorkingDirectory)\$(workingDirectory)\checkov-report.sarif'
               ArtifactName: CheckovReport
               publishLocation: Container
 
-# ──────────────────────────────── INIT ────────────────────────────────
+# ────────────────────────────── INIT ──────────────────────────────
   - stage: Init
     displayName: Terraform Init
     dependsOn: Scan
@@ -90,7 +92,7 @@ stages:
           - script: |
               rd /s /q .terraform
               del /q .terraform.lock.hcl 2>NUL
-            displayName: Clean .terraform directory
+            displayName: Clean .terraform folder
 
           - script: |
               echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
