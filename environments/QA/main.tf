@@ -153,6 +153,7 @@ module "app_gateway" {
   firewall_policy_id   = module.waf_policy.waf_policy_id
   tags                 = var.app_gateway_tags
   custom_rules         = var.custom_rules
+key_vault_secret_id = var.key_vault_secret_id
 }
 
 ############################
