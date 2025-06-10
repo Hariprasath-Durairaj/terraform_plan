@@ -163,6 +163,7 @@ module "aks" {
 
   # ── cluster options ─────────────────────────────────────────────
   private_cluster_enabled         = var.private_cluster_enabled
+  enable_private_cluster_public_fqdn = false
   api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
 
   # ── AGIC ────────────────────────────────────────────────────────
