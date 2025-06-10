@@ -128,6 +128,7 @@ module "waf_policy" {
   file_upload_limit_in_mb     = 100
   max_request_body_size_in_kb = 128
   tags                        = var.tags
+  ssl_certificate_secret_id    = var.appgw_ssl_cert_secret_id
 }
 
 module "app_gateway" {
