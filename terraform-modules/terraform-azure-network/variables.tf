@@ -28,3 +28,12 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "subnet_network_security_group_ids" {
+  description = <<EOF
+Map of subnet names → NSG resource IDs.  
+Every subnet you want to protect must have an entry here.  
+EOF
+  type    = map(string)
+  default = {} 
+}
