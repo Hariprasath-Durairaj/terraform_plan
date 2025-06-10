@@ -282,5 +282,9 @@ variable "acr_id" {
   type        = string
 }
 
+variable "key_vault_secret_id" {
+  description = "Key Vault Secret URI for the App Gateway SSL cert"
+  type        = string
+}
 
 
