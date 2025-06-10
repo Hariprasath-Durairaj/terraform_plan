@@ -114,10 +114,10 @@ variable "key_vault_key_id" {
 ############################
 # 6. Container Registry & Backup
 ############################
-variable "acr_name" {
-  description = "Azure Container Registry name"
-  type        = string
-}
+#variable "acr_name" {
+#  description = "Azure Container Registry name"
+#  type        = string
+#}
 
 variable "backup_vault_name" {
   description = "Recovery Services vault name"
