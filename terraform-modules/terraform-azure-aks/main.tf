@@ -37,6 +37,12 @@ resource "azurerm_kubernetes_cluster" "this" {
   }
   role_based_access_control_enabled = true
 
+addon_profile {
+   azure_policy {
+    enabled = var.enable_azure_policy
+  }
+}
+
   # ── CLUSTER NETWORKING ────────────────────────────────────────────────────
   network_profile {
     network_plugin = var.network_plugin
