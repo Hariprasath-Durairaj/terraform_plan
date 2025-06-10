@@ -11,10 +11,8 @@ variables:
   backendContainerName: tfstate
   backendKey: qa.terraform.tfstate
 
-###############################################################################
-# 1. LINT  ─────────────────────────────────────────────────────────────────────
-###############################################################################
 stages:
+  # ───────────────────────────── LINT ─────────────────────────────
   - stage: Lint
     displayName: Terraform Lint
     jobs:
@@ -35,9 +33,7 @@ stages:
                 tflint --chdir=$(workingDirectory)
                 if (-not $?) { Write-Warning "⚠️  TFLint warnings detected, continuing." }
 
-###############################################################################
-# 2. SCAN  ─────────────────────────────────────────────────────────────────────
-###############################################################################
+  # ───────────────────────────── SCAN ─────────────────────────────
   - stage: Scan
     displayName: Terraform Security Scan
     dependsOn: Lint
@@ -47,7 +43,7 @@ stages:
         steps:
           - checkout: self
 
-          # Install Checkov
+          # Install Checkov via pip
           - task: PowerShell@2
             displayName: Install Checkov
             inputs:
@@ -57,26 +53,38 @@ stages:
                 Write-Host "Installing Checkov..."
                 python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          # Run Checkov & create SARIF
+          # Run Checkov and write SARIF to staging
           - task: PowerShell@2
             displayName: Run Checkov ➜ SARIF
             inputs:
               targetType: inline
               script: |
-                $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
+                # Add common Python script locations to PATH
+                $env:Path = @(
+                  "C:\Program Files\Python313\Scripts",
+                  "$env:USERPROFILE\AppData\Local\Programs\Python\Python313\Scripts",
+                  "$env:USERPROFILE\AppData\Roaming\Python\Python313\Scripts",
+                  $env:Path
+                ) -join ';'
+
+                # Prepare staging directory
                 New-Item -ItemType Directory -Force -Path "$(Build.ArtifactStagingDirectory)" | Out-Null
                 $sarif = "$(Build.ArtifactStagingDirectory)\checkov-report.sarif"
 
                 Write-Host "Running Checkov scan..."
-                & "C:\Program Files\Python313\Scripts\checkov.exe" -d $(workingDirectory) `
-                  -o sarif --output-file-path "$sarif"
+                $exe = (Get-Command checkov.exe -ErrorAction SilentlyContinue).Source
+                if ($exe) {
+                  & $exe -d $(workingDirectory) -o sarif --output-file-path "$sarif"
+                } else {
+                  python -m checkov.cli -d $(workingDirectory) -o sarif --output-file-path "$sarif"
+                }
 
                 if ($LASTEXITCODE -ne 0) {
                   Write-Warning "⚠️  Checkov finished with findings (non-zero exit). Continuing pipeline."
-                  exit 0   # prevents task failure
+                  exit 0
                 }
 
-          # Publish SARIF as build artifact
+          # Publish SARIF artifact
           - task: PublishBuildArtifacts@1
             displayName: Publish Checkov SARIF
             inputs:
@@ -84,9 +92,7 @@ stages:
               ArtifactName: 'CheckovReport'
               publishLocation: 'Container'
 
-###############################################################################
-# 3. INIT  ─────────────────────────────────────────────────────────────────────
-###############################################################################
+  # ───────────────────────────── INIT ──────────────────────────────
   - stage: Init
     displayName: Terraform Init
     dependsOn: Scan
