@@ -29,7 +29,7 @@ address_space = ["10.31.0.0/16"]
 subnets = {
   aks                = ["10.31.4.0/22"]
   appgw              = ["10.31.64.0/24"]
-  AzureBastionSubnet = ["10.31.80.0/27"]
+#  AzureBastionSubnet = ["10.31.80.0/27"]
 }
 
 nat_gateway_name = "dhdp-qa-natgw"
