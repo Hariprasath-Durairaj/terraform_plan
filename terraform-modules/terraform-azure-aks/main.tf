@@ -44,6 +44,13 @@ addon_profile {
   }
 }
 
+  addon_profile {
+    azure_keyvault_secrets_provider {
+      enabled                = var.auto_rotate_secrets
+      rotation_poll_interval = "2m"
+    }
+  }
+
   # ── CLUSTER NETWORKING ────────────────────────────────────────────────────
   network_profile {
     network_plugin = var.network_plugin
