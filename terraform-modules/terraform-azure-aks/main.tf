@@ -21,6 +21,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     name                        = var.default_node_pool.name
     vm_size                     = var.default_node_pool.vm_size
     temporary_name_for_rotation = var.default_node_pool.temporary_name_for_rotation
+    disk_encryption_set_id = var.enable_disk_encryption_set ? var.disk_encryption_set_id : null
     enable_auto_scaling         = var.default_node_pool.enable_auto_scaling
     min_count                   = var.default_node_pool.min_count
     max_count                   = var.default_node_pool.max_count
@@ -106,6 +107,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "user" {
 
   vm_size         = each.value.vm_size
   os_disk_size_gb = each.value.os_disk_size_gb
+  disk_encryption_set_id = var.enable_disk_encryption_set ? var.disk_encryption_set_id : null
   node_count      = each.value.node_count
   max_pods        = each.value.max_pods
   mode            = each.value.mode
