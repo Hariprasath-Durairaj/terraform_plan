@@ -13,3 +13,9 @@ resource "azurerm_subnet" "subnets" {
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = each.value
 }
+ resource "azurerm_subnet_network_security_group_association" "nsg_assoc" {
+   for_each = var.subnet_network_security_group_ids
+
+   subnet_id                 = azurerm_subnet.subnets[each.key].id
+   network_security_group_id = each.value
+ }
