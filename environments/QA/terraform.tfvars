@@ -218,5 +218,6 @@ app_gateway_tags = {
   Owner       = "HP"
   ManagedBy   = "Terraform"
 }
+appgw_ssl_cert_secret_id = "/subscriptions/…/resourceGroups/rg/providers/Microsoft.KeyVault/vaults/kv/secrets/appgw-pfx"
 
 
