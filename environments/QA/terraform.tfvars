@@ -76,7 +76,7 @@ backup_vault_name = "dhdp-qa-backup-vault"
 ########################
 # 7. Azure Container Registry
 ########################
-acr_name = "dhdpqaaqr"
+#acr_name = "dhdpqaaqr"
 
 ########################
 # 8. AKS cluster
@@ -221,4 +221,6 @@ app_gateway_tags = {
 }
 appgw_ssl_cert_secret_id = "/subscriptions/…/resourceGroups/rg/providers/Microsoft.KeyVault/vaults/kv/secrets/appgw-pfx"
 
+existing_acr_id           = "/subscriptions/acc2f242-1262-48a4-8ab5-980bdf8aa8b6/resourceGroups/dhdp-test-resource-group/providers/Microsoft.ContainerRegistry/registries/dhdptestacr"
+existing_acr_login_server = "dhdptestacr.azurecr.io"
 
