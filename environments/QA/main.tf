@@ -73,7 +73,7 @@ module "key_vault" {
   resource_group_name = var.resource_group_name
   tenant_id           = var.tenant_id
   tags                = var.tags
-  ssl_certificate_secret_id = azurerm_key_vault_secret.appgw_pfx.id
+  #ssl_certificate_secret_id = azurerm_key_vault_secret.appgw_pfx.id
 }
 
 module "disk_encryption_set" {
