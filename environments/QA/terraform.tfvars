@@ -104,6 +104,7 @@ default_node_pool = {
   os_disk_size_gb    = 50
   node_labels        = { type = "system" }
   availability_zones = ["1", "2", "3"]
+  vnet_subnet_id     = "PLACEHOLDER" 
 }
 
 user_node_pools = {
@@ -119,6 +120,8 @@ user_node_pools = {
     node_labels         = { app = "bitnobi" }
     taints              = ["app=bitnobi:NoSchedule"]
     availability_zones  = ["1", "2", "3"]
+    node_count          = 3
+    tags                = { app = "bitnobi" }
   }
   candig = {
     name                = "candig"
@@ -132,6 +135,8 @@ user_node_pools = {
     node_labels         = { app = "candig" }
     taints              = ["app=candig:NoSchedule"]
     availability_zones  = ["1", "2", "3"]
+    node_count          = 3
+    tags                = { app = "candig" }
   }
   keycloak = {
     name                = "keycloak"
@@ -145,6 +150,8 @@ user_node_pools = {
     node_labels         = { app = "keycloak" }
     taints              = ["app=keycloak:NoSchedule"]
     availability_zones  = ["1", "2", "3"]
+    node_count          = 3
+    tags                = { app = "keycloak" }
   }
   integrateai = {
     name                = "integrateai"
@@ -158,6 +165,8 @@ user_node_pools = {
     node_labels         = { app = "integrateai" }
     taints              = ["app=integrateai:NoSchedule"]
     availability_zones  = ["1", "2", "3"]
+    node_count          = 3
+    tags                = { app = "integrateai" }
   }
   webapp = {
     name                = "webapp"
@@ -171,6 +180,8 @@ user_node_pools = {
     node_labels         = { app = "webapp" }
     taints              = ["app=webapp:NoSchedule"]
     availability_zones  = ["1", "2", "3"]
+    node_count          = 3
+    tags                = { app = "webapp" }
   }
 }
 
