@@ -102,6 +102,9 @@ module "nsg" {
   subnet_id           = module.vnet.subnet_ids["aks"]
   nsg_security_rules  = var.nsg_security_rules
   tags                = var.tags
+  depends_on = [
+    module.nat_gateway
+  ]
 }
 
 ############################
