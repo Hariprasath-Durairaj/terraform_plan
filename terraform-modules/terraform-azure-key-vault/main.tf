@@ -14,8 +14,8 @@ resource "azurerm_key_vault" "this" {
   soft_delete_retention_days      = var.soft_delete_retention_days
 
   network_acls {
-    default_action = Deny
-    bypass         = AzureServices
+    default_action = "Deny"
+    bypass         = "AzureServices"
   }
 
   tags = var.tags
