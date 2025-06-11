@@ -114,7 +114,7 @@ module "waf_policy" {
   name                        = "${var.prefix}-waf-policy"
   location                    = var.location
   resource_group_name         = var.resource_group_name
-  ssl_certificate_secret_id = null
+  ssl_certificate_secret_id   = null
   mode                        = "Prevention"
   owasp_version               = "3.2"
   file_upload_limit_in_mb     = 100
@@ -123,31 +123,31 @@ module "waf_policy" {
 }
 
 module "app_gateway" {
-  source                      = "../../terraform-modules/terraform-azure-app-gateway"
-  name                        = var.app_gateway_name
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
-  subnet_id                   = module.vnet.subnet_ids[var.app_gateway_subnet_name]
-  public_ip_id                = module.public_ip_appgw.public_ip_id
+  source              = "../../terraform-modules/terraform-azure-app-gateway"
+  name                = var.app_gateway_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = module.vnet.subnet_ids[var.app_gateway_subnet_name]
+  public_ip_id        = module.public_ip_appgw.public_ip_id
 
   # HTTPS settings
-  https_frontend_port         = 443
-  backend_https_port          = 443
+  https_frontend_port = 443
+  backend_https_port  = 443
   #ssl_certificate_secret_id   = var.appgw_ssl_cert_secret_id
-  ssl_certificate_name        = "appgw-ssl-cert"
+  ssl_certificate_name = "appgw-ssl-cert"
 
   # HTTP settings
-  frontend_port               = var.app_gateway_frontend_port
-  backend_port                = var.app_gateway_backend_port
-  backend_ip_addresses        = var.app_gateway_backend_ip_addresses
+  frontend_port        = var.app_gateway_frontend_port
+  backend_port         = var.app_gateway_backend_port
+  backend_ip_addresses = var.app_gateway_backend_ip_addresses
 
-  sku_name                    = var.app_gateway_sku_name
-  sku_tier                    = var.app_gateway_sku_tier
-  capacity                    = var.app_gateway_capacity
+  sku_name = var.app_gateway_sku_name
+  sku_tier = var.app_gateway_sku_tier
+  capacity = var.app_gateway_capacity
 
-  firewall_policy_id          = module.waf_policy.waf_policy_id
-  tags                        = var.app_gateway_tags
-  custom_rules                = var.custom_rules
+  firewall_policy_id = module.waf_policy.waf_policy_id
+  tags               = var.app_gateway_tags
+  custom_rules       = var.custom_rules
 
   # App Gateway upgrade & public access settings
   #upgrade_channel              = var.upgrade_channel
@@ -158,34 +158,34 @@ module "app_gateway" {
 # 6. AKS Cluster with AGIC
 ############################
 module "aks" {
-  source                            = "../../terraform-modules/terraform-azure-aks"
+  source = "../../terraform-modules/terraform-azure-aks"
 
-  name                              = var.aks_name
-  location                          = var.location
-  resource_group_name               = var.resource_group_name
-  dns_prefix                        = var.dns_prefix
-  kubernetes_version                = var.kubernetes_version
-  node_resource_group               = var.node_resource_group
-  disable_local_accounts            = true
-  enable_azure_policy               = true
-  auto_rotate_secrets               = true
+  name                   = var.aks_name
+  location               = var.location
+  resource_group_name    = var.resource_group_name
+  dns_prefix             = var.dns_prefix
+  kubernetes_version     = var.kubernetes_version
+  node_resource_group    = var.node_resource_group
+  disable_local_accounts = true
+  enable_azure_policy    = true
+  auto_rotate_secrets    = true
 
   # integrations
-  acr_id                            = var.acr_id
-  log_analytics_workspace_id        = module.log_analytics.workspace_id
+  acr_id                     = var.acr_id
+  log_analytics_workspace_id = module.log_analytics.workspace_id
 
-  private_cluster_enabled           = true
+  private_cluster_enabled            = true
   enable_private_cluster_public_fqdn = false
-  api_server_authorized_ip_ranges   = var.api_server_authorized_ip_ranges
+  api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
 
   # AGIC
   enable_ingress_application_gateway = true
-  ingress_application_gateway_id      = module.app_gateway.app_gateway_id
+  ingress_application_gateway_id     = module.app_gateway.app_gateway_id
 
   # networking
-  network_plugin                    = var.network_plugin
-  dns_service_ip                    = var.dns_service_ip
-  service_cidr                      = var.service_cidr
+  network_plugin = var.network_plugin
+  dns_service_ip = var.dns_service_ip
+  service_cidr   = var.service_cidr
 
   # system node pool
   default_node_pool = merge(

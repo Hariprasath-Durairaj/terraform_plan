@@ -27,9 +27,9 @@ vnet_name     = "dhdp-lab-qa-vnet"
 address_space = ["10.31.0.0/16"]
 
 subnets = {
-  aks                = ["10.31.4.0/22"]
-  appgw              = ["10.31.64.0/24"]
-#  AzureBastionSubnet = ["10.31.80.0/27"]
+  aks   = ["10.31.4.0/22"]
+  appgw = ["10.31.64.0/24"]
+  #  AzureBastionSubnet = ["10.31.80.0/27"]
 }
 
 nat_gateway_name = "dhdp-lab-qa-natgw"
@@ -62,8 +62,8 @@ private_dns_link_name = "acr-dns-link"
 ########################
 # 5. Key Vault & Encryption
 ########################
-key_vault_name         = "dhdp-lab-qa-kv"
-des_name               = "dhdp-lab-qa-des"
+key_vault_name = "dhdp-lab-qa-kv"
+des_name       = "dhdp-lab-qa-des"
 
 # App Gateway SSL certificate (must be the vault URI, not an ARM ID)
 #key_vault_secret_id    = "https://dhdp-lab-qa-kv.vault.azure.net/secrets/appgw-pfx" 
@@ -95,16 +95,16 @@ kubernetes_version  = "1.32.3"
 node_resource_group = "MC_dhdp-lab-qa-rg_dhdp-lab-qa-aks_canadacentral"
 
 default_node_pool = {
-  name               = "system"
-  vm_size            = "Standard_D2s_v3"
+  name                = "system"
+  vm_size             = "Standard_D2s_v3"
   enable_auto_scaling = true
-  min_count          = 1
-  max_count          = 3
-  max_pods           = 50
-  os_disk_size_gb    = 50
-  node_labels        = { type = "system" }
-  availability_zones = ["1", "2", "3"]
-  vnet_subnet_id     = "PLACEHOLDER" 
+  min_count           = 1
+  max_count           = 3
+  max_pods            = 50
+  os_disk_size_gb     = 50
+  node_labels         = { type = "system" }
+  availability_zones  = ["1", "2", "3"]
+  vnet_subnet_id      = "PLACEHOLDER"
 }
 
 user_node_pools = {
@@ -199,8 +199,8 @@ log_retention      = 30
 ########################
 # 10. Application Gateway & WAF
 ########################
-app_gateway_name        = "dhdp-lab-qa-appgw"
-app_gateway_subnet_name = "appgw"
+app_gateway_name                 = "dhdp-lab-qa-appgw"
+app_gateway_subnet_name          = "appgw"
 app_gateway_frontend_port        = 80
 app_gateway_backend_port         = 80
 app_gateway_backend_ip_addresses = ["10.31.4.4", "10.31.4.5"]
