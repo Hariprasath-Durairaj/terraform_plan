@@ -94,11 +94,11 @@ variable "backend_https_port" {
   default     = 443
 }
 
-variable "ssl_certificate_secret_id" {
-  description = "Key Vault Secret ID of the PFX certificate for HTTPS"
-  type        = string
-  default     = ""
-}
+#variable "ssl_certificate_secret_id" {
+#  description = "Key Vault Secret ID of the PFX certificate for HTTPS"
+#  type        = string
+#  default     = ""
+#}
 
 variable "ssl_certificate_name" {
   description = "Name for the SSL certificate resource inside AGW"
@@ -108,5 +108,6 @@ variable "ssl_certificate_name" {
 variable "key_vault_secret_id" {
   type        = string
   description = "Full Key Vault Secret URI, e.g. https://<vault>.vault.azure.net/secrets/<secret-name>[/<version>]"
+  default     = null
 }
 
