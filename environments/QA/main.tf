@@ -114,6 +114,7 @@ module "waf_policy" {
   name                        = "${var.prefix}-waf-policy"
   location                    = var.location
   resource_group_name         = var.resource_group_name
+  ssl_certificate_secret_id = null
   mode                        = "Prevention"
   owasp_version               = "3.2"
   file_upload_limit_in_mb     = 100
