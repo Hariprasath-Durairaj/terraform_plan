@@ -276,6 +276,7 @@ variable "private_cluster_enabled" {
 variable "appgw_ssl_cert_secret_id" {
   description = "Key Vault secret ID for the Application Gateway SSL certificate"
   type        = string
+  default     = null
 }
 
 variable "acr_id" {
@@ -286,6 +287,7 @@ variable "acr_id" {
 variable "key_vault_secret_id" {
   description = "Key Vault Secret URI for the App Gateway SSL cert"
   type        = string
+  default     = null
 }
 
 ############################
