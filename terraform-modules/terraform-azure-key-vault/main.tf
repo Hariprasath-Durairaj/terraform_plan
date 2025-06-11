@@ -4,7 +4,7 @@ resource "azurerm_key_vault" "this" {
   resource_group_name             = var.resource_group_name
   tenant_id                       = var.tenant_id
   sku_name                        = "standard"
-  public_network_access_enabled   = false
+
 
   enable_rbac_authorization       = var.enable_rbac_authorization
   enabled_for_deployment          = var.enabled_for_deployment
@@ -13,10 +13,12 @@ resource "azurerm_key_vault" "this" {
   purge_protection_enabled        = var.purge_protection_enabled
   soft_delete_retention_days      = var.soft_delete_retention_days
 
-  network_acls {
-    default_action = "Deny"
-    bypass         = "AzureServices"
-  }
+  # TEMPORARILY open the vault for the first run
+  public_network_access_enabled = true   # 👈 allow public
+  # -- OR keep false and use an allow rule --
+  # network_acls {
+  #   default_action = "Allow"
+  # }
 
   tags = var.tags
 }
