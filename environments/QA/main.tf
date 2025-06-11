@@ -174,7 +174,7 @@ module "aks" {
 
   private_cluster_enabled            = true
   enable_private_cluster_public_fqdn = false
-  api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
+  #api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
 
   # AGIC
   enable_ingress_application_gateway = true
