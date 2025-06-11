@@ -221,6 +221,10 @@ provider "kubernetes" {
   #depends_on = [module.aks]
 }
 
+resource "null_resource" "wait_for_aks" {
+  depends_on = [module.aks]
+}
+
 ############################
 # 7. Private DNS
 ############################
@@ -240,5 +244,5 @@ module "private_dns" {
 resource "kubernetes_namespace" "workspaces" {
   for_each = toset(["bitnobi", "candig", "keycloak", "integrateai", "webapp"])
   metadata { name = each.key }
-  depends_on = [module.aks]
+  depends_on = [null_resource.wait_for_aks]
 }
