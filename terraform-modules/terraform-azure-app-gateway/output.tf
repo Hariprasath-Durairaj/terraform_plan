@@ -1,4 +1,7 @@
 output "app_gateway_id" {
-  description = "The ID of the Application Gateway"
-  value       = azurerm_application_gateway.this.id
+  value = (
+    length(azurerm_application_gateway.https) > 0
+    ? azurerm_application_gateway.https[0].id
+    : azurerm_application_gateway.http[0].id
+  )
 }
