@@ -13,7 +13,7 @@ resource "azurerm_web_application_firewall_policy" "this" {
 
   # ── Block Log4Shell (CVE-2021-44228) Lookups ─────────────────────────────
   custom_rules {
-    name      = "block-log4shell"
+    name      = "BlockLog4Shell"
     priority  = 1
     rule_type = "MatchRule"
     action    = "Block"
