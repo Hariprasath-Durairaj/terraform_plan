@@ -13,10 +13,6 @@ module "vnet" {
   resource_group_name = var.resource_group_name
   subnets             = var.subnets
   tags                = var.tags
-  subnet_network_security_group_ids = {
-    aks = module.nsg.aks_nsg_id
-    # add other subnet NSG mappings if needed
-  }
 }
 
 module "natgw_public_ip" {
