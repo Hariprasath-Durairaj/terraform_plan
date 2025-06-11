@@ -27,3 +27,11 @@ resource "azurerm_key_vault" "this" {
 #   key_vault_id = azurerm_key_vault.this.id
 #   content_type = "application/x-pkcs12"
 # }
+resource "azurerm_key_vault_key" "disk_encryption" {
+  name         = "${var.name}-des-key"
+  key_vault_id = azurerm_key_vault.this.id
+  key_type     = "RSA"
+  key_size     = 2048
+  key_opts     = ["wrapKey", "unwrapKey"]
+}
+
