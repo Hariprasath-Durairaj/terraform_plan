@@ -4,7 +4,7 @@ resource "azurerm_key_vault" "this" {
   resource_group_name             = var.resource_group_name
   tenant_id                       = var.tenant_id
   sku_name                        = "standard"
-  public_network_access_enabled   = var.public_network_access_enabled
+  public_network_access_enabled   = false
 
   enable_rbac_authorization       = var.enable_rbac_authorization
   enabled_for_deployment          = var.enabled_for_deployment
@@ -14,8 +14,8 @@ resource "azurerm_key_vault" "this" {
   soft_delete_retention_days      = var.soft_delete_retention_days
 
   network_acls {
-    default_action = var.default_action
-    bypass         = var.bypass
+    default_action = Deny
+    bypass         = AzureServices
   }
 
   tags = var.tags
