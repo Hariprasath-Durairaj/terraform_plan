@@ -133,7 +133,7 @@ module "app_gateway" {
   # HTTPS settings
   https_frontend_port         = 443
   backend_https_port          = 443
-  ssl_certificate_secret_id   = var.appgw_ssl_cert_secret_id
+  #ssl_certificate_secret_id   = var.appgw_ssl_cert_secret_id
   ssl_certificate_name        = "appgw-ssl-cert"
 
   # HTTP settings
@@ -150,8 +150,8 @@ module "app_gateway" {
   custom_rules                = var.custom_rules
 
   # App Gateway upgrade & public access settings
-  upgrade_channel              = var.upgrade_channel
-  public_network_access_enabled = var.public_network_access_enabled
+  #upgrade_channel              = var.upgrade_channel
+  #public_network_access_enabled = var.public_network_access_enabled
 }
 
 ############################
