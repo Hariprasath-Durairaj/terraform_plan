@@ -21,9 +21,9 @@ resource "azurerm_key_vault" "this" {
   tags = var.tags
 }
 
-resource "azurerm_key_vault_secret" "appgw_pfx" {
-  name         = "appgw-pfx"
-  value        = filebase64("${path.module}/certs/appgw.pfx")
-  key_vault_id = azurerm_key_vault.this.id
-  content_type = "application/x-pkcs12"
-}
+# resource "azurerm_key_vault_secret" "appgw_pfx" {
+#   name         = "appgw-pfx"
+#   value        = filebase64("${path.module}/certs/appgw.pfx")
+#   key_vault_id = azurerm_key_vault.this.id
+#   content_type = "application/x-pkcs12"
+# }
