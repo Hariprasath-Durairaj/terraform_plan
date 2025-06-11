@@ -102,9 +102,13 @@ module "nsg" {
   subnet_id           = module.vnet.subnet_ids["aks"]
   nsg_security_rules  = var.nsg_security_rules
   tags                = var.tags
-  depends_on = [
-    module.nat_gateway
-  ]
+}
+
+resource "azurerm_subnet_network_security_group_association" "aks_nsg_assoc" {
+  subnet_id                 = module.vnet.subnet_ids["aks"]
+  network_security_group_id = module.nsg.nsg_id
+
+  depends_on = [module.nat_gateway]
 }
 
 ############################
