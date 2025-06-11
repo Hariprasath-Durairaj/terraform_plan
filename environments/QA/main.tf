@@ -218,6 +218,7 @@ provider "kubernetes" {
   client_certificate     = base64decode(module.aks.kube_config.client_certificate)
   client_key             = base64decode(module.aks.kube_config.client_key)
   cluster_ca_certificate = base64decode(module.aks.kube_config.cluster_ca_certificate)
+  depends_on = [module.aks]
 }
 
 ############################
@@ -239,4 +240,5 @@ module "private_dns" {
 resource "kubernetes_namespace" "workspaces" {
   for_each = toset(["bitnobi", "candig", "keycloak", "integrateai", "webapp"])
   metadata { name = each.key }
+  depends_on = [module.aks]
 }
