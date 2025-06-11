@@ -66,7 +66,8 @@ key_vault_name         = "dhdp-qa-kv"
 des_name               = "dhdp-qa-des"
 
 # App Gateway SSL certificate (must be the vault URI, not an ARM ID)
-key_vault_secret_id    = "https://dhdp-qa-kv.vault.azure.net/secrets/appgw-pfx"  
+#key_vault_secret_id    = "https://dhdp-qa-kv.vault.azure.net/secrets/appgw-pfx" 
+
 
 # Disk Encryption Set CMK (include version)
 key_vault_key_id       = "https://dhdp-qa-kv.vault.azure.net/keys/dhdp-qa-des-key/<version>"
