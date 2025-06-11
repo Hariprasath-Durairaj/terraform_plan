@@ -70,7 +70,7 @@ des_name               = "dhdp-lab-qa-des"
 
 
 # Disk Encryption Set CMK (include version)
-key_vault_key_id       = "https://dhdp-lab-qa-kv.vault.azure.net/keys/dhdp-lab-qa-des-key/<version>"
+#key_vault_key_id       = "https://dhdp-lab-qa-kv.vault.azure.net/keys/dhdp-lab-qa-des-key/<version>"
 
 # App Gateway public access / upgrade settings
 public_network_access_enabled = false
