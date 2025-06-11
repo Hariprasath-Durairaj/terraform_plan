@@ -14,11 +14,12 @@ resource "azurerm_key_vault" "this" {
   soft_delete_retention_days      = var.soft_delete_retention_days
 
   # TEMPORARILY open the vault for the first run
-  public_network_access_enabled = true   # 👈 allow public
-  # -- OR keep false and use an allow rule --
-  # network_acls {
-  #   default_action = "Allow"
-  # }
+public_network_access_enabled = true
+
+network_acls {
+  default_action = "Allow"
+  bypass         = "AzureServices"
+}
 
   tags = var.tags
 }
