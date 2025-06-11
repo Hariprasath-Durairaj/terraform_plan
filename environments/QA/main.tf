@@ -220,11 +220,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.aks.kube_config.cluster_ca_certificate)
 }
 
-
-resource "null_resource" "wait_for_aks" {
-  depends_on = [module.aks]
-}
-
 ############################
 # 7. Private DNS
 ############################
