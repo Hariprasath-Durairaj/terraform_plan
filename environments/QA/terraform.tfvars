@@ -7,7 +7,7 @@
 ########################
 prefix              = "dhdp-lab-qa"
 location            = "canadacentral"
-resource_group_name = "dhdp-aks-qa"
+resource_group_name = "dhdp-aks-lab-qa"
 tenant_id           = "c25c5028-2135-4990-9b82-d8c62774306a"
 
 tags = {
@@ -23,7 +23,7 @@ tags = {
 ########################
 # 2. Networking
 ########################
-vnet_name     = "dhdp-qa-vnet"
+vnet_name     = "dhdp-lab-qa-vnet"
 address_space = ["10.31.0.0/16"]
 
 subnets = {
@@ -32,12 +32,12 @@ subnets = {
 #  AzureBastionSubnet = ["10.31.80.0/27"]
 }
 
-nat_gateway_name = "dhdp-qa-natgw"
+nat_gateway_name = "dhdp-lab-qa-natgw"
 
 ########################
 # 3. Network Security Group
 ########################
-nsg_name = "dhdp-qa-nsg"
+nsg_name = "dhdp-lab-qa-nsg"
 
 nsg_security_rules = [
   {
@@ -62,15 +62,15 @@ private_dns_link_name = "acr-dns-link"
 ########################
 # 5. Key Vault & Encryption
 ########################
-key_vault_name         = "dhdp-qa-kv"
-des_name               = "dhdp-qa-des"
+key_vault_name         = "dhdp-lab-qa-kv"
+des_name               = "dhdp-lab-qa-des"
 
 # App Gateway SSL certificate (must be the vault URI, not an ARM ID)
-#key_vault_secret_id    = "https://dhdp-qa-kv.vault.azure.net/secrets/appgw-pfx" 
+#key_vault_secret_id    = "https://dhdp-lab-qa-kv.vault.azure.net/secrets/appgw-pfx" 
 
 
 # Disk Encryption Set CMK (include version)
-key_vault_key_id       = "https://dhdp-qa-kv.vault.azure.net/keys/dhdp-qa-des-key/<version>"
+key_vault_key_id       = "https://dhdp-lab-qa-kv.vault.azure.net/keys/dhdp-lab-qa-des-key/<version>"
 
 # App Gateway public access / upgrade settings
 public_network_access_enabled = false
@@ -79,7 +79,7 @@ upgrade_channel               = "Stable"
 ########################
 # 6. Backup
 ########################
-backup_vault_name = "dhdp-qa-backup-vault"
+backup_vault_name = "dhdp-lab-qa-backup-vault"
 
 ########################
 # 7. Azure Container Registry
@@ -89,10 +89,10 @@ acr_id = "/subscriptions/acc2f242-1262-48a4-8ab5-980bdf8aa8b6/resourceGroups/dhd
 ########################
 # 8. AKS cluster
 ########################
-aks_name            = "dhdp-qa-aks"
+aks_name            = "dhdp-lab-qa-aks"
 dns_prefix          = "dhdpqa"
 kubernetes_version  = "1.32.3"
-node_resource_group = "MC_dhdp-qa-rg_dhdp-qa-aks_canadacentral"
+node_resource_group = "MC_dhdp-lab-qa-rg_dhdp-lab-qa-aks_canadacentral"
 
 default_node_pool = {
   name               = "system"
@@ -193,13 +193,13 @@ api_server_authorized_ip_ranges = ["203.0.113.10/32"]
 ########################
 # 9. Log Analytics
 ########################
-log_analytics_name = "dhdp-qa-log"
+log_analytics_name = "dhdp-lab-qa-log"
 log_retention      = 30
 
 ########################
 # 10. Application Gateway & WAF
 ########################
-app_gateway_name        = "dhdp-qa-appgw"
+app_gateway_name        = "dhdp-lab-qa-appgw"
 app_gateway_subnet_name = "appgw"
 app_gateway_frontend_port        = 80
 app_gateway_backend_port         = 80
