@@ -81,7 +81,7 @@ module "disk_encryption_set" {
   name                = var.des_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  key_vault_key_id    = var.key_vault_key_id
+  key_vault_key_id    = module.key_vault.des_key_id
   tags                = var.tags
 }
 
