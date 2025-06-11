@@ -22,7 +22,7 @@ resource "azurerm_network_security_group" "this" {
 }   # <--- THIS CLOSING BRACE MUST BE PRESENT!
 
 
-resource "azurerm_subnet_network_security_group_association" "this" {
-  subnet_id                 = var.subnet_id
-  network_security_group_id = azurerm_network_security_group.this.id
-}
+#resource "azurerm_subnet_network_security_group_association" "this" {
+#  subnet_id                 = var.subnet_id
+#  network_security_group_id = azurerm_network_security_group.this.id
+#}
