@@ -12,3 +12,7 @@ output "key_vault_uri" {
   description = "URI of the Key Vault"
   value       = azurerm_key_vault.this.vault_uri
 }
+
+output "des_key_id" {
+  value = azurerm_key_vault_key.disk_encryption.id  # includes version
+}
