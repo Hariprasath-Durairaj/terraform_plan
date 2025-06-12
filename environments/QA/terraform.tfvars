@@ -6,7 +6,7 @@
 # 1. Global settings
 ########################
 prefix              = "dhdp-lab-qa"
-location            = "canadaeast"
+location            = "eastus"
 resource_group_name = "dhdp-aks-qa"
 tenant_id           = "c25c5028-2135-4990-9b82-d8c62774306a"
 
