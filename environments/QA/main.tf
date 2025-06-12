@@ -179,7 +179,7 @@ module "aks" {
   acr_id                     = var.acr_id
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
-  private_cluster_enabled            = true
+  private_cluster_enabled            = false
   enable_private_cluster_public_fqdn = false
   #api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
 
