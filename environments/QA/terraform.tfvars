@@ -84,7 +84,7 @@ backup_vault_name = "dhdp-lab-qa-backup-vault"
 ########################
 # 7. Azure Container Registry
 ########################
-acr_id = "/subscriptions/acc2f242-1262-48a4-8ab5-980bdf8aa8b6/resourceGroups/dhdp-test-resource-group/providers/Microsoft.ContainerRegistry/registries/dhdptestacr"
+acr_id = "/subscriptions/accf2f42-1262-48a4-8ab5-980bdf8aa8b8/resourceGroups/dhdp-test-resource-group/providers/Microsoft.ContainerRegistry/registries/dhdptestacr"
 
 ########################
 # 8. AKS cluster
