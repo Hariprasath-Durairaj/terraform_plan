@@ -108,66 +108,7 @@ default_node_pool = {
 }
 
 user_node_pools = {
-  bitnobi = {
-    name                = "bitnobi"
-    vm_size             = "Standard_D2s_v3"
-    os_disk_size_gb     = 100
-    enable_auto_scaling = true
-    min_count           = 3
-    max_count           = 5
-    max_pods            = 50
-    mode                = "User"
-    node_labels         = { app = "bitnobi" }
-    taints              = ["app=bitnobi:NoSchedule"]
-    availability_zones  = ["1", "2", "3"]
-    node_count          = 3
-    tags                = { app = "bitnobi" }
-  }
-  candig = {
-    name                = "candig"
-    vm_size             = "Standard_D2s_v3"
-    os_disk_size_gb     = 50
-    enable_auto_scaling = true
-    min_count           = 3
-    max_count           = 5
-    max_pods            = 50
-    mode                = "User"
-    node_labels         = { app = "candig" }
-    taints              = ["app=candig:NoSchedule"]
-    availability_zones  = ["1", "2", "3"]
-    node_count          = 3
-    tags                = { app = "candig" }
-  }
-  keycloak = {
-    name                = "keycloak"
-    vm_size             = "Standard_D2s_v3"
-    os_disk_size_gb     = 50
-    enable_auto_scaling = true
-    min_count           = 3
-    max_count           = 5
-    max_pods            = 50
-    mode                = "User"
-    node_labels         = { app = "keycloak" }
-    taints              = ["app=keycloak:NoSchedule"]
-    availability_zones  = ["1", "2", "3"]
-    node_count          = 3
-    tags                = { app = "keycloak" }
-  }
-  integrateai = {
-    name                = "integrateai"
-    vm_size             = "Standard_D2s_v3"
-    os_disk_size_gb     = 50
-    enable_auto_scaling = true
-    min_count           = 3
-    max_count           = 5
-    max_pods            = 50
-    mode                = "User"
-    node_labels         = { app = "integrateai" }
-    taints              = ["app=integrateai:NoSchedule"]
-    availability_zones  = ["1", "2", "3"]
-    node_count          = 3
-    tags                = { app = "integrateai" }
-  }
+  
   webapp = {
     name                = "webapp"
     vm_size             = "Standard_D2s_v3"
