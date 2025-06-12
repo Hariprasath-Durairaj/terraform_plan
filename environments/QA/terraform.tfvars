@@ -6,7 +6,7 @@
 # 1. Global settings
 ########################
 prefix              = "dhdp-lab-qa"
-location            = "eastus"
+location            = "canadacentral"
 resource_group_name = "dhdp-aks-qa"
 tenant_id           = "c25c5028-2135-4990-9b82-d8c62774306a"
 
@@ -103,7 +103,7 @@ default_node_pool = {
   max_pods            = 50
   os_disk_size_gb     = 50
   node_labels         = { type = "system" }
-  availability_zones  = ["1"]
+  availability_zones  = ["1", "2", "3"]
   vnet_subnet_id      = "PLACEHOLDER"
 }
 
@@ -119,7 +119,7 @@ user_node_pools = {
     mode                = "User"
     node_labels         = { app = "bitnobi" }
     taints              = ["app=bitnobi:NoSchedule"]
-    availability_zones  = ["1"]
+    availability_zones  = ["1", "2", "3"]
     node_count          = 3
     tags                = { app = "bitnobi" }
   }
@@ -134,7 +134,7 @@ user_node_pools = {
     mode                = "User"
     node_labels         = { app = "candig" }
     taints              = ["app=candig:NoSchedule"]
-    availability_zones  = ["1"]
+    availability_zones  = ["1", "2", "3"]
     node_count          = 3
     tags                = { app = "candig" }
   }
@@ -149,7 +149,7 @@ user_node_pools = {
     mode                = "User"
     node_labels         = { app = "keycloak" }
     taints              = ["app=keycloak:NoSchedule"]
-    availability_zones  = ["1"]
+    availability_zones  = ["1", "2", "3"]
     node_count          = 3
     tags                = { app = "keycloak" }
   }
@@ -164,7 +164,7 @@ user_node_pools = {
     mode                = "User"
     node_labels         = { app = "integrateai" }
     taints              = ["app=integrateai:NoSchedule"]
-    availability_zones  = ["1"]
+    availability_zones  = ["1", "2", "3"]
     node_count          = 3
     tags                = { app = "integrateai" }
   }
@@ -179,7 +179,7 @@ user_node_pools = {
     mode                = "User"
     node_labels         = { app = "webapp" }
     taints              = ["app=webapp:NoSchedule"]
-    availability_zones  = ["1"]
+    availability_zones  = ["1", "2", "3"]
     node_count          = 3
     tags                = { app = "webapp" }
   }
