@@ -29,10 +29,11 @@ output "key_vault_id" {
   value       = module.key_vault.key_vault_id
 }
 
-#output "acr_id" {
-#  description = "ID of the Azure Container Registry"
-#  value       = module.acr.acr_id
-#}
+# Uncomment if ACR module is included
+# output "acr_id" {
+#   description = "ID of the Azure Container Registry"
+#   value       = module.acr.acr_id
+# }
 
 output "log_analytics_workspace_id" {
   description = "ID of the Log Analytics workspace"
@@ -54,5 +55,3 @@ output "private_dns_zone_id" {
   description = "ID of the Private DNS zone"
   value       = module.private_dns.zone_id
 }
-
-
