@@ -13,8 +13,6 @@ module "vnet" {
   resource_group_name = var.resource_group_name
   subnets             = var.subnets
   tags                = var.tags
-
-
 }
 
 module "natgw_public_ip" {
@@ -32,11 +30,9 @@ module "nat_gateway" {
   name                = var.nat_gateway_name
   location            = var.location
   resource_group_name = var.resource_group_name
-
-  public_ip_id = module.natgw_public_ip.public_ip_id
-  subnet_id    = module.vnet.subnet_ids["aks"]
-
-  tags = var.tags
+  public_ip_id        = module.natgw_public_ip.public_ip_id
+  subnet_id           = module.vnet.subnet_ids["aks"]
+  tags                = var.tags
 }
 
 ############################
@@ -71,7 +67,6 @@ module "key_vault" {
   resource_group_name = var.resource_group_name
   tenant_id           = var.tenant_id
   tags                = var.tags
-  #ssl_certificate_secret_id = azurerm_key_vault_secret.appgw_pfx.id
 }
 
 module "disk_encryption_set" {
@@ -107,7 +102,6 @@ module "nsg" {
 resource "azurerm_subnet_network_security_group_association" "aks_nsg_assoc" {
   subnet_id                 = module.vnet.subnet_ids["aks"]
   network_security_group_id = module.nsg.nsg_id
-
   depends_on = [module.nat_gateway]
 }
 
@@ -115,16 +109,16 @@ resource "azurerm_subnet_network_security_group_association" "aks_nsg_assoc" {
 # 5. Ingress: WAF + App Gateway
 ############################
 module "waf_policy" {
-  source                      = "../../terraform-modules/terraform-azure-waf"
-  name                        = "${var.prefix}-waf-policy"
-  location                    = var.location
-  resource_group_name         = var.resource_group_name
+  source              = "../../terraform-modules/terraform-azure-waf"
+  name                = "${var.prefix}-waf-policy"
+  location            = var.location
+  resource_group_name = var.resource_group_name
   ssl_certificate_secret_id   = null
-  mode                        = "Prevention"
-  owasp_version               = "3.2"
+  mode                = "Prevention"
+  owasp_version       = "3.2"
   file_upload_limit_in_mb     = 100
   max_request_body_size_in_kb = 128
-  tags                        = var.tags
+  tags                = var.tags
 }
 
 module "app_gateway" {
@@ -135,28 +129,21 @@ module "app_gateway" {
   subnet_id           = module.vnet.subnet_ids[var.app_gateway_subnet_name]
   public_ip_id        = module.public_ip_appgw.public_ip_id
 
-  # HTTPS settings
-  https_frontend_port = 443
-  backend_https_port  = 443
-  #ssl_certificate_secret_id   = var.appgw_ssl_cert_secret_id
-  ssl_certificate_name = "appgw-ssl-cert"
+  # HTTPS/HTTP settings
+  https_frontend_port       = 443
+  backend_https_port        = 443
+  ssl_certificate_name      = "appgw-ssl-cert"
+  frontend_port             = var.app_gateway_frontend_port
+  backend_port              = var.app_gateway_backend_port
+  backend_ip_addresses      = []  # AGIC-managed
 
-  # HTTP settings
-  frontend_port        = var.app_gateway_frontend_port
-  backend_port         = var.app_gateway_backend_port
-  backend_ip_addresses = var.app_gateway_backend_ip_addresses
-
-  sku_name = var.app_gateway_sku_name
-  sku_tier = var.app_gateway_sku_tier
-  capacity = var.app_gateway_capacity
-
+  sku_name           = var.app_gateway_sku_name
+  sku_tier           = var.app_gateway_sku_tier
+  capacity           = var.app_gateway_capacity
   firewall_policy_id = module.waf_policy.waf_policy_id
+
   tags               = var.app_gateway_tags
   custom_rules       = var.custom_rules
-
-  # App Gateway upgrade & public access settings
-  #upgrade_channel              = var.upgrade_channel
-  #public_network_access_enabled = var.public_network_access_enabled
 }
 
 ############################
@@ -165,55 +152,38 @@ module "app_gateway" {
 module "aks" {
   source = "../../terraform-modules/terraform-azure-aks"
 
-  name                   = var.aks_name
-  location               = var.location
-  resource_group_name    = var.resource_group_name
-  dns_prefix             = var.dns_prefix
-  kubernetes_version     = var.kubernetes_version
-  node_resource_group    = var.node_resource_group
-  disable_local_accounts = true
-  enable_azure_policy    = true
-  auto_rotate_secrets    = true
+  name                = var.aks_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  dns_prefix          = var.dns_prefix
+  kubernetes_version  = var.kubernetes_version
+  node_resource_group = var.node_resource_group
 
-  # integrations
+  # Integrations
   acr_id                     = var.acr_id
   log_analytics_workspace_id = module.log_analytics.workspace_id
 
-  private_cluster_enabled            = false
+  # Private cluster
+  private_cluster_enabled            = true
   enable_private_cluster_public_fqdn = false
-  #api_server_authorized_ip_ranges    = var.api_server_authorized_ip_ranges
+  private_dns_zone_id                = azurerm_private_dns_zone.aks_api.id
 
-  # AGIC
-  enable_ingress_application_gateway = true
-  ingress_application_gateway_id     = module.app_gateway.app_gateway_id
-
-  # networking
+  # Networking
   network_plugin = var.network_plugin
   dns_service_ip = var.dns_service_ip
   service_cidr   = var.service_cidr
 
-  # system node pool
   default_node_pool = merge(
     var.default_node_pool,
     {
-      vnet_subnet_id              = module.vnet.subnet_ids["aks"]
-      zones                       = ["1", "2", "3"]
-      tags                        = var.tags
-      temporary_name_for_rotation = "tempnp"
-      type                        = "VirtualMachineScaleSets"
+      vnet_subnet_id = module.vnet.subnet_ids["aks"]
+      zones          = ["1", "2", "3"]
+      tags           = var.tags
     }
   )
 
-  # user node pools
-  user_node_pools = {
-    for k, v in var.user_node_pools : k => merge(
-      v,
-      {
-        vnet_subnet_id      = module.vnet.subnet_ids["aks"]
-        enable_auto_scaling = true
-      }
-    )
-  }
+  # Disable built-in AGIC add-on
+  enable_ingress_application_gateway = false
 
   tags = var.tags
 }
@@ -226,7 +196,24 @@ provider "kubernetes" {
 }
 
 ############################
-# 7. Private DNS
+# 7A. Private DNS Zone for AKS API
+############################
+resource "azurerm_private_dns_zone" "aks_api" {
+  name                = "privatelink.${var.location}.azmk8s.io"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "aks_api_link" {
+  name                  = "agent-to-aks-dns-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.aks_api.name
+  virtual_network_id    = module.vnet.vnet_id
+  registration_enabled  = false
+}
+
+############################
+# 7B. (Existing) Additional Private DNS
 ############################
 module "private_dns" {
   source               = "../../terraform-modules/terraform-azure-private-dns"
