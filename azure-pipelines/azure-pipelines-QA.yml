@@ -51,17 +51,17 @@ stages:
 
           - script: |
               echo "Running Checkov scan..."
-              # emit SARIF into the workingDirectory so PublishBuildArtifacts can find it
-              python3 -m checkov -d $(workingDirectory) \
-                -o sarif \
-                --output-file-path $(workingDirectory)/checkov-report.sarif \
-                || echo "Checkov completed with findings"
+              python3 -m checkov \
+                  -d $(workingDirectory) \
+                  -o sarif \
+                  --output-file-path $(Build.SourcesDirectory)/$(workingDirectory)/checkov-report.sarif \
+                  || echo "Checkov completed with findings"
             displayName: 'Run Checkov with SARIF Output'
 
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Checkov SARIF Report'
             inputs:
-              PathtoPublish: '$(workingDirectory)/checkov-report.sarif'
+              PathtoPublish: '$(Build.SourcesDirectory)/$(workingDirectory)/checkov-report.sarif'
               ArtifactName: 'CheckovReport'
               publishLocation: 'Container'
 
