@@ -102,23 +102,23 @@ module "nsg" {
 resource "azurerm_subnet_network_security_group_association" "aks_nsg_assoc" {
   subnet_id                 = module.vnet.subnet_ids["aks"]
   network_security_group_id = module.nsg.nsg_id
-  depends_on = [module.nat_gateway]
+  depends_on                = [module.nat_gateway]
 }
 
 ############################
 # 5. Ingress: WAF + App Gateway
 ############################
 module "waf_policy" {
-  source              = "../../terraform-modules/terraform-azure-waf"
-  name                = "${var.prefix}-waf-policy"
-  location            = var.location
-  resource_group_name = var.resource_group_name
+  source                      = "../../terraform-modules/terraform-azure-waf"
+  name                        = "${var.prefix}-waf-policy"
+  location                    = var.location
+  resource_group_name         = var.resource_group_name
   ssl_certificate_secret_id   = null
-  mode                = "Prevention"
-  owasp_version       = "3.2"
+  mode                        = "Prevention"
+  owasp_version               = "3.2"
   file_upload_limit_in_mb     = 100
   max_request_body_size_in_kb = 128
-  tags                = var.tags
+  tags                        = var.tags
 }
 
 module "app_gateway" {
@@ -130,20 +130,20 @@ module "app_gateway" {
   public_ip_id        = module.public_ip_appgw.public_ip_id
 
   # HTTPS/HTTP settings
-  https_frontend_port       = 443
-  backend_https_port        = 443
-  ssl_certificate_name      = "appgw-ssl-cert"
-  frontend_port             = var.app_gateway_frontend_port
-  backend_port              = var.app_gateway_backend_port
-  backend_ip_addresses      = []  # AGIC-managed
+  https_frontend_port  = 443
+  backend_https_port   = 443
+  ssl_certificate_name = "appgw-ssl-cert"
+  frontend_port        = var.app_gateway_frontend_port
+  backend_port         = var.app_gateway_backend_port
+  backend_ip_addresses = [] # AGIC-managed
 
   sku_name           = var.app_gateway_sku_name
   sku_tier           = var.app_gateway_sku_tier
   capacity           = var.app_gateway_capacity
   firewall_policy_id = module.waf_policy.waf_policy_id
 
-  tags               = var.app_gateway_tags
-  custom_rules       = var.custom_rules
+  tags         = var.app_gateway_tags
+  custom_rules = var.custom_rules
 }
 
 ############################
