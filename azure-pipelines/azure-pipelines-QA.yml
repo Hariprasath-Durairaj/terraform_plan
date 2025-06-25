@@ -50,7 +50,12 @@ stages:
             displayName: 'Install Checkov'
 
           - script: |
-              python3 -m checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
+              echo "Running Checkov scan..."
+              # emit SARIF into the workingDirectory so PublishBuildArtifacts can find it
+              python3 -m checkov -d $(workingDirectory) \
+                -o sarif \
+                --output-file-path $(workingDirectory)/checkov-report.sarif \
+                || echo "Checkov completed with findings"
             displayName: 'Run Checkov with SARIF Output'
 
           - task: PublishBuildArtifacts@1
