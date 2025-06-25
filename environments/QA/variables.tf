@@ -213,6 +213,16 @@ variable "app_gateway_backend_port" {
   type        = number
 }
 
+variable "app_gateway_sku_name" {
+  description = "SKU name for the Application Gateway (e.g., Standard_v2, WAF_v2)"
+  type        = string
+}
+
+variable "app_gateway_sku_tier" {
+  description = "SKU tier for the Application Gateway (e.g., Standard, WAF)"
+  type        = string
+}
+
 variable "app_gateway_capacity" {
   description = "Instance count for App Gateway"
   type        = number
