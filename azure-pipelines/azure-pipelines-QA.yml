@@ -39,27 +39,24 @@ stages:
         steps:
           - checkout: self
 
-          # ❗️ Ensure Python+pip are on PATH
           - task: UsePythonVersion@0
             displayName: 'Use Python 3.x'
             inputs:
               versionSpec: '3.x'
 
           - script: |
-              echo "Upgrading pip and installing Checkov..."
               python3 -m pip install --upgrade pip
               python3 -m pip install checkov
             displayName: 'Install Checkov'
 
           - script: |
-              echo "Running Checkov scan..."
               python3 -m checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
             displayName: 'Run Checkov with SARIF Output'
 
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Checkov SARIF Report'
             inputs:
-              PathtoPublish: 'checkov-report.sarif'
+              PathtoPublish: '$(workingDirectory)/checkov-report.sarif'
               ArtifactName: 'CheckovReport'
               publishLocation: 'Container'
 
@@ -101,7 +98,7 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(workingDirectory)'
-              backendServiceArm: '$(serviceConnection)'  
+              backendServiceArm: '$(serviceConnection)'
               backendAzureRmResourceGroupName: '$(backendResourceGroup)'
               backendAzureRmStorageAccountName: '$(backendStorageAccount)'
               backendAzureRmContainerName: '$(backendContainerName)'
