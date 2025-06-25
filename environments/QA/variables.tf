@@ -303,3 +303,28 @@ variable "public_network_access_enabled" {
   description = "Enable public network access on the Application Gateway"
   type        = bool
 }
+
+############################
+# 11. New variables to declare
+############################
+
+variable "subscription_id" {
+  description = "Primary Azure subscription ID for resource creation"
+  type        = string
+}
+
+variable "peer_subscription_id" {
+  description = "Secondary Azure subscription ID used by aliased providers"
+  type        = string
+}
+
+variable "upgrade_channel" {
+  description = "App Gateway upgrade channel (e.g. Stable, Preview)"
+  type        = string
+}
+
+variable "public_network_access_enabled" {
+  description = "Enable public network access on the Application Gateway"
+  type        = bool
+}
+
