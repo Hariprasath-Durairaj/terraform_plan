@@ -6,11 +6,11 @@ pool:
 
 variables:
   workingDirectory: 'environments/QA'
-  serviceConnection: 'dhdp-infra-sc'
-  backendResourceGroup: 'dhdp-qat-resource-group'
-  backendStorageAccount: 'dhdplabsa'
-  backendContainerName: 'tfstate'
-  backendKey: 'qa.terraform.tfstate'
+  serviceConnection: 'dhdp-infra-service-connection'
+  backendResourceGroup: 'dhdp-qa-rg'
+  backendStorageAccount: 'dhdpqasf'
+  backendContainerName: 'qatfstate'
+  backendKey: 'qa/terraform.tfstate'
 
 stages:
   - stage: Lint
