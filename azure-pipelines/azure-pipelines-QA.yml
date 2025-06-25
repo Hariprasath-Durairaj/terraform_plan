@@ -1,7 +1,7 @@
 trigger: none
 
 pool:
-  name: Default
+  vmImage: Ubuntu
 
 variables:
   workingDirectory: 'environments/QA'
