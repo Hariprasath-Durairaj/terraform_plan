@@ -11,102 +11,129 @@ variables:
   backendContainerName: 'qatfstate'
   backendKey: 'qa/terraform.tfstate'
 
+###############################################################################
+# 1. LINT  ────────────────────────────────────────────────────────────────────
+###############################################################################
 stages:
   - stage: Lint
-    displayName: 'Terraform Lint'
+    displayName: Terraform Lint
     jobs:
       - job: Lint
-        displayName: 'Lint Terraform Code'
+        displayName: Lint Terraform Code
         steps:
           - checkout: self
             persistCredentials: true
 
-          - script: |
-              echo "Installing tflint..."
-              curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-              tflint --init
-              tflint --chdir=$(workingDirectory) || echo "⚠️ TFLint warnings detected, but not failing the pipeline."
-            displayName: 'Run tflint'
+          # Host already has TFLint v0.58 installed
+          - task: PowerShell@2
+            displayName: Run TFLint (host-installed)
+            inputs:
+              targetType: inline
+              script: |
+                tflint --init
+                if (-not $?) {
+                  Write-Warning "⚠️  TFLint init failed, continuing."
+                }
 
+                tflint --chdir=$(workingDirectory)
+                if (-not $?) {
+                  Write-Warning "⚠️  TFLint warnings detected, continuing."
+                }
+
+###############################################################################
+# 2. SCAN  ────────────────────────────────────────────────────────────────────
+###############################################################################
   - stage: Scan
-    displayName: 'Terraform Security Scan'
+    displayName: Terraform Security Scan
     dependsOn: Lint
     jobs:
       - job: Scan
-        displayName: 'Checkov Terraform Scan'
-        pool:
-          vmImage: 'ubuntu-latest'
+        displayName: Checkov Terraform Scan
         steps:
           - checkout: self
 
-          - task: UsePythonVersion@0
-            displayName: 'Use Python 3.x'
+          # Install Checkov with host Python 3.13
+          - task: PowerShell@2
+            displayName: Install Checkov
             inputs:
-              versionSpec: '3.x'
+              targetType: inline
+              script: |
+                $env:Path = "C:\Program Files\Python313\Scripts;C:\Program Files\Python313;" + $env:Path
+                Write-Host "Installing Checkov..."
+                python -m pip install --disable-pip-version-check --no-cache-dir --upgrade checkov
 
-          - script: |
-              python3 -m pip install --upgrade pip
-              python3 -m pip install checkov
-            displayName: 'Install Checkov'
+          # Run Checkov and save SARIF to staging directory
+          - task: PowerShell@2
+            displayName: Run Checkov ➜ SARIF
+            inputs:
+              targetType: inline
+              script: |
+                # Add Scripts dir so checkov.exe is on PATH
+                $env:Path = "C:\Program Files\Python313\Scripts;$env:Path"
+                New-Item -ItemType Directory -Force -Path "$(Build.ArtifactStagingDirectory)" | Out-Null
+                $sarif = "$(Build.ArtifactStagingDirectory)\checkov-report.sarif"
 
-          - script: |
-              echo "Running Checkov scan..."
-              python3 -m checkov \
-                  -d $(workingDirectory) \
-                  -o sarif \
-                  --output-file-path $(Build.SourcesDirectory)/$(workingDirectory)/checkov-report.sarif \
-                  || echo "Checkov completed with findings"
-            displayName: 'Run Checkov with SARIF Output'
+                Write-Host "Running Checkov scan..."
+                python -m checkov.cli -d $(workingDirectory) `
+                  -o sarif --output-file-path "$sarif"
 
+                if ($LASTEXITCODE -ne 0) {
+                  Write-Warning "⚠️  Checkov finished with findings (non-zero exit). Continuing pipeline."
+                  exit 0   # keep pipeline green
+                }
+
+          # Publish SARIF artifact
           - task: PublishBuildArtifacts@1
-            displayName: 'Publish Checkov SARIF Report'
+            displayName: Publish Checkov SARIF
             inputs:
-              PathtoPublish: '$(Build.SourcesDirectory)/$(workingDirectory)/checkov-report.sarif'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
               ArtifactName: 'CheckovReport'
               publishLocation: 'Container'
 
+###############################################################################
+# 3. INIT  ────────────────────────────────────────────────────────────────────
+###############################################################################
   - stage: Init
-    displayName: 'Terraform Init'
+    displayName: Terraform Init
     dependsOn: Scan
     jobs:
       - job: Init
-        displayName: 'Terraform Initialization'
-        pool:
-          vmImage: 'ubuntu-latest'
+        displayName: Terraform Initialization
         steps:
           - checkout: self
             persistCredentials: true
 
           - script: |
-              rm -rf .terraform
-              rm -f .terraform.lock.hcl
-            displayName: 'Clean .terraform and lockfile'
+              rd /s /q .terraform
+              del /q .terraform.lock.hcl 2>NUL
+            displayName: Clean .terraform folder
 
+          # Set Azure OIDC env vars
           - script: |
               echo "##vso[task.setvariable variable=ARM_USE_OIDC]true"
               echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$(servicePrincipalId)"
               echo "##vso[task.setvariable variable=ARM_TENANT_ID]$(tenantId)"
               echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$(subscriptionId)"
-            displayName: 'Set OIDC Auth Variables'
+            displayName: Set OIDC auth variables
 
           - task: TerraformInstaller@1
-            displayName: 'Install Terraform'
+            displayName: Install Terraform 1.5.7
             inputs:
-              terraformVersion: '1.5.7'
+              terraformVersion: 1.5.7
 
           - script: terraform -version
-            displayName: 'Show Terraform Version'
+            displayName: Show Terraform version
 
           - task: TerraformTaskV4@4
-            displayName: 'Terraform Init'
+            displayName: Terraform Init
             inputs:
-              provider: 'azurerm'
-              command: 'init'
-              workingDirectory: '$(workingDirectory)'
-              backendServiceArm: '$(serviceConnection)'
-              backendAzureRmResourceGroupName: '$(backendResourceGroup)'
-              backendAzureRmStorageAccountName: '$(backendStorageAccount)'
-              backendAzureRmContainerName: '$(backendContainerName)'
-              backendAzureRmKey: '$(backendKey)'
+              provider: azurerm
+              command: init
+              workingDirectory: $(workingDirectory)
+              backendServiceArm: $(serviceConnection)
+              backendAzureRmResourceGroupName: $(backendResourceGroup)
+              backendAzureRmStorageAccountName: $(backendStorageAccount)
+              backendAzureRmContainerName: $(backendContainerName)
+              backendAzureRmKey: $(backendKey)
               backendAzureRmUseOIDC: true
-              useTerraformVersion: '1.5.7'
+              useTerraformVersion: 1.5.7
