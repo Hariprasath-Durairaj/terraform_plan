@@ -106,22 +106,16 @@ variable "des_name" {
   type        = string
 }
 
-variable "key_vault_key_id" {
-  description = "Customer-managed key URI"
-  type        = string
-  default     = ""
-}
-
 ############################
 # 6. Container Registry & Backup
 ############################
-#variable "acr_name" {
-#  description = "Azure Container Registry name"
-#  type        = string
-#}
-
 variable "backup_vault_name" {
   description = "Recovery Services vault name"
+  type        = string
+}
+
+variable "acr_id" {
+  description = "Existing ACR ID to use"
   type        = string
 }
 
@@ -164,10 +158,7 @@ variable "default_node_pool" {
   })
 }
 
-variable "user_node_pools" {
-  description = "Map of user-defined node pools"
-  type        = map(any)
-}
+
 
 variable "network_plugin" {
   description = "Network plugin (azure | kubenet)"
@@ -184,11 +175,7 @@ variable "service_cidr" {
   type        = string
 }
 
-variable "api_server_authorized_ip_ranges" {
-  description = "CIDRs allowed to reach the AKS control plane"
-  type        = list(string)
-  default     = []
-}
+
 
 ############################
 # 8. Log Analytics
@@ -226,22 +213,6 @@ variable "app_gateway_backend_port" {
   type        = number
 }
 
-variable "app_gateway_backend_ip_addresses" {
-  description = "Initial backend IPs (AGIC will overwrite)"
-  type        = list(string)
-  default     = []
-}
-
-variable "app_gateway_sku_name" {
-  description = "SKU name (e.g., WAF_v2)"
-  type        = string
-}
-
-variable "app_gateway_sku_tier" {
-  description = "SKU tier"
-  type        = string
-}
-
 variable "app_gateway_capacity" {
   description = "Instance count for App Gateway"
   type        = number
@@ -267,64 +238,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "private_cluster_enabled" {
-  description = "Whether the AKS cluster should be private"
-  type        = bool
-  default     = false
-}
 
-variable "appgw_ssl_cert_secret_id" {
-  description = "Key Vault secret ID for the Application Gateway SSL certificate"
-  type        = string
-  default     = null
-}
 
-variable "acr_id" {
-  description = "Existing ACR ID to use"
-  type        = string
-}
-
-variable "key_vault_secret_id" {
-  description = "Key Vault Secret URI for the App Gateway SSL cert"
-  type        = string
-  default     = null
-}
-
-############################
-# 11. New variables to declare
-############################
-
-variable "upgrade_channel" {
-  description = "App Gateway upgrade channel (e.g. Stable, Preview)"
-  type        = string
-}
-
-variable "public_network_access_enabled" {
-  description = "Enable public network access on the Application Gateway"
-  type        = bool
-}
-
-############################
-# 11. New variables to declare
-############################
-
-variable "subscription_id" {
-  description = "Primary Azure subscription ID for resource creation"
-  type        = string
-}
-
-variable "peer_subscription_id" {
-  description = "Secondary Azure subscription ID used by aliased providers"
-  type        = string
-}
-
-variable "upgrade_channel" {
-  description = "App Gateway upgrade channel (e.g. Stable, Preview)"
-  type        = string
-}
-
-variable "public_network_access_enabled" {
-  description = "Enable public network access on the Application Gateway"
-  type        = bool
-}
 
