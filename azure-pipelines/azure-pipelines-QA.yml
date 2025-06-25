@@ -1,4 +1,3 @@
-
 trigger: none
 
 pool:
@@ -35,17 +34,26 @@ stages:
     jobs:
       - job: Scan
         displayName: 'Checkov Terraform Scan'
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
 
+          # ❗️ Ensure Python+pip are on PATH
+          - task: UsePythonVersion@0
+            displayName: 'Use Python 3.x'
+            inputs:
+              versionSpec: '3.x'
+
           - script: |
-              echo "Installing Checkov..."
-              pip install checkov
+              echo "Upgrading pip and installing Checkov..."
+              python3 -m pip install --upgrade pip
+              python3 -m pip install checkov
             displayName: 'Install Checkov'
 
           - script: |
               echo "Running Checkov scan..."
-              checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
+              python3 -m checkov -d $(workingDirectory) -o sarif --output-file-path checkov-report.sarif || echo "Checkov completed with findings"
             displayName: 'Run Checkov with SARIF Output'
 
           - task: PublishBuildArtifacts@1
@@ -61,6 +69,8 @@ stages:
     jobs:
       - job: Init
         displayName: 'Terraform Initialization'
+        pool:
+          vmImage: 'ubuntu-latest'
         steps:
           - checkout: self
             persistCredentials: true
@@ -91,7 +101,7 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(workingDirectory)'
-              backendServiceArm: '$(serviceConnection)'  # ✅ Required for backend
+              backendServiceArm: '$(serviceConnection)'  
               backendAzureRmResourceGroupName: '$(backendResourceGroup)'
               backendAzureRmStorageAccountName: '$(backendStorageAccount)'
               backendAzureRmContainerName: '$(backendContainerName)'
