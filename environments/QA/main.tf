@@ -166,7 +166,7 @@ module "aks" {
   # Private cluster
   private_cluster_enabled            = true
   enable_private_cluster_public_fqdn = false
-  private_dns_zone_id                = azurerm_private_dns_zone.aks_api.id
+
 
   # Networking
   network_plugin = var.network_plugin
@@ -233,7 +233,7 @@ resource "null_resource" "wait_for_aks" {
 }
 
 resource "kubernetes_namespace" "workspaces" {
-  for_each = toset(["bitnobi", "candig", "keycloak", "integrateai", "webapp"])
+  for_each = toset(["bitnobi", "candig", "keycloak", "webapp"])
 
   metadata {
     name = each.key

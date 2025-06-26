@@ -145,16 +145,18 @@ variable "node_resource_group" {
 variable "default_node_pool" {
   description = "System node-pool settings"
   type = object({
-    name                = string
-    vm_size             = string
-    enable_auto_scaling = bool
-    min_count           = number
-    max_count           = number
-    max_pods            = number
-    os_disk_size_gb     = number
-    node_labels         = map(string)
-    vnet_subnet_id      = string
-    availability_zones  = optional(list(string))
+    name                        = string
+    vm_size                     = string
+    enable_auto_scaling         = bool
+    min_count                   = number
+    max_count                   = number
+    max_pods                    = number
+    os_disk_size_gb             = number
+    node_labels                 = map(string)
+    vnet_subnet_id              = string
+    availability_zones          = optional(list(string))
+    temporary_name_for_rotation = string
+    type                        = string
   })
 }
 
@@ -249,5 +251,37 @@ variable "prefix" {
 }
 
 
+variable "user_node_pools" {
+  description = "Map of user-defined node pools"
+  type        = map(any)
+}
+
+variable "app_gateway_backend_ip_addresses" {
+  description = "Initial backend IPs (AGIC will overwrite)"
+  type        = list(string)
+  default     = []
+}
+
+variable "api_server_authorized_ip_ranges" {
+  description = "CIDRs allowed to reach the AKS control plane"
+  type        = list(string)
+  default     = []
+}
+
+variable "private_cluster_enabled" {
+  description = "Whether the AKS cluster should be private"
+  type        = bool
+  default     = false
+}
+
+variable "upgrade_channel" {
+  description = "App Gateway upgrade channel (e.g. Stable, Preview)"
+  type        = string
+}
+
+variable "public_network_access_enabled" {
+  description = "Enable public network access on the Application Gateway"
+  type        = bool
+}
 
 
